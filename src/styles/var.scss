@@ -1,0 +1,13 @@
+/* global css variable */
+$main-color: #003469;
+$main-text-color: #111111;
+$secondary-text-color: #666666;
+$little-text-color: #aaaaaa;
+$border-light: #F7F7FA;
+:root {
+  --primary:#003469;
+  --error:#FF3600;
+  --main: #111111;
+  --secondary: #666666;
+  --little: #aaaaaa;
+}

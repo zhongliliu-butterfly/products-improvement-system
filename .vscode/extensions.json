@@ -1,0 +1,12 @@
+{
+  "recommendations": [
+    "vue.volar",
+    "hollowtree.vue-snippets",
+    "dbaeumer.vscode-eslint",
+    "stylelint.vscode-stylelint",
+    "esbenp.prettier-vscode",
+    "editorconfig.editorconfig",
+    "syler.sass-indented",
+    "mikestead.dotenv"
+  ]
+}
