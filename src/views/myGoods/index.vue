@@ -106,24 +106,65 @@ const columns = reactive<ColumnProps<any>[]>([
     width: 130,
   },
 ]);
-// let tabledata = Array.from({ length: 10 }).map((_, index) => ({
-//   title: "商品名称" + index,
-//   main_image_url: TestGoods,
-//   parent_asin: "ASINASINASINASIN",
-//   total: "100",
-//   refund: "10",
-//   star: 4.0,
-//   forward: "100",
-//   negative: "100",
-//   refundRate: "12%",
-//   id: index + "商品名称1",
-// }));
-let tabledatas = reactive({ data: [] });
+const tabledata = Array.from({ length: 10 }).map((_, index) => ({
+  title: "商品名称" + index,
+  main_image_url: TestGoods,
+  parent_asin: "ASINASINASINASIN",
+  total: "100",
+  refund: "10",
+  star: 4.0,
+  forward: "100",
+  negative: "100",
+  refundRate: "12%",
+  id: index + "商品名称1",
+}));
+let tabledatas = reactive({ data: tabledata });
+
 const handleRowClick = async (row: any) => {
-  // router.push({ name: "goodsDetail", params: { id: row.id } });
+  router.push({ name: "goodsDetail", params: { id: row.title } });
   // console.log("router", router);
-  // console.log("row", row);
-  // );
+  console.log("row", row);
+};
+
+const toUrl = (url: string) => {
+  window.open(url);
+};
+
+const follow = async (row: object) => {
+  const { data } = await http.post(
+    `/system/search_product`,
+    {
+      market_place_id: row?.market_place_id,
+      asin: row?.parent_asin,
+      u_id: "1555073968740999936",
+    },
+    { loading: false }
+  );
+  console.log("关注：", data);
+};
+
+const unfollow = async (row: string) => {
+  const { data } = await http.put(
+    `/system/search_product`,
+    {
+      market_place_id: row?.market_place_id,
+      asin: row?.parent_asin,
+      u_id: "1555073968740999936",
+    },
+    { loading: false }
+  );
+  console.log("取关：", data);
+};
+
+const activeName = ref<string>("first");
+const handleactiveName = (tab: string) => {
+  activeName.value = tab;
+  console.log(tab);
+};
+
+import type { TabsPaneContext } from "element-plus";
+const handleClick = (tab: TabsPaneContext, event: Event) => {
+  console.log(tab, event);
 };
 
 onBeforeMount(async () => {
@@ -151,10 +192,6 @@ onBeforeMount(async () => {
   cardList.value[1].options = cate_name;
   cardList.value[4].options = review_channel;
 });
-onMounted(async () => {
-  // ref组件定义的数据
-  // data = myref.value.dataList;
-});
 
 const handle = async (v) => {
   console.log(`国家/地区：${v[0].value}`);
@@ -177,7 +214,6 @@ const handle = async (v) => {
     { loading: true }
   );
   tabledatas.data = res.data;
-  console.log(res.data, 111111111111);
 };
 // watch(data, (newVal, oldVal, onCleanup) => {
 //   console.log(newVal, oldVal);
@@ -205,9 +241,21 @@ const handle = async (v) => {
       >
         <template #tableHeader>
           <div class="tableHeader w-full fcc gap20 text-(12 #666)">
-            <span class="active">全部商品</span>
-            <span>我的关注</span>
-            <span class="fc gap5">
+            <span
+              :class="{ active: activeName === 'all' }"
+              @click="handleactiveName('all')"
+              >全部商品</span
+            >
+            <span
+              :class="{ active: activeName === 'myFollow' }"
+              @click="handleactiveName('myFollow')"
+              >我的关注</span
+            >
+            <span
+              class="fc gap5"
+              :class="{ active: activeName === 'warning' }"
+              @click="handleactiveName('warning')"
+            >
               告警商品
               <svg-icon icon="warning" />
             </span>
@@ -252,28 +300,35 @@ const handle = async (v) => {
               class="item fc gap5"
             >
               <div class="proportion">
-                {{ item }}
                 {{ item.count }} / {{ item.proportion }}
               </div>
               <span class="desc truncate">{{ item.label_name }}</span>
             </div>
           </div>
         </template>
-        <template #negative_3_labels>
+        <template #negative_3_labels="{ row }">
           <div class="negative">
-            <div v-for="item in 3" :key="item" class="item fc gap5">
-              <div class="proportion">2.0 / 26</div>
-              <span class="desc truncate">材质柔软不伤皮肤不</span>
+            <div
+              v-for="item in row.negative_3_labels"
+              :key="item"
+              class="item fc gap5"
+            >
+              <div class="proportion">
+                {{ item.count }} / {{ item.proportion }}
+              </div>
+              <span class="desc truncate">{{ item.label_name }}</span>
             </div>
           </div>
         </template>
         <!-- 表格操作 -->
-        <template #operation>
+        <template #operation="{ row }">
           <div class="operation flex-col gap-5">
             <a><svg-icon icon="tendency" />查看趋势</a>
-            <a><svg-icon icon="link" />链接直达</a>
-            <a><svg-icon icon="heart" />关注商品</a>
-            <a><svg-icon icon="unheart" />取消关注</a>
+            <a @click="toUrl(row.item_link)"
+              ><svg-icon icon="link" />链接直达</a
+            >
+            <a @click="follow(row)"><svg-icon icon="heart" />关注商品</a>
+            <a @click="unfollow(row)"><svg-icon icon="unheart" />取消关注</a>
           </div>
         </template>
       </ProTable>
@@ -295,6 +350,10 @@ const handle = async (v) => {
         color: $main-text-color;
       }
     }
+  }
+  .name {
+    width: 140px;
+    white-space: normal;
   }
   :deep(.header-button-lf) {
     width: 100%;

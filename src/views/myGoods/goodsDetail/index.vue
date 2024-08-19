@@ -2,24 +2,16 @@
 import QuestionCard from "./components/questionCard.vue";
 import FeedBack from "./components/feedBack.vue";
 import Comparison from "./components/comparison.vue";
+import http from "@/api";
 
 const route = useRoute();
-const goodsId = route.params.id;
-console.log("goodsId", goodsId);
+const goods = route.params.id;
+console.log("goods", goods);
+
 const cardList = ref<QueryCard[]>([
   {
     title: "国家/地区",
     icon: "country",
-    options: [
-      {
-        label: "中国",
-        value: "1",
-      },
-      {
-        label: "美国",
-        value: "2",
-      },
-    ],
     span: 4,
     value: "",
   },
@@ -30,6 +22,52 @@ const cardList = ref<QueryCard[]>([
     span: 4,
   },
 ]);
+
+onBeforeMount(async () => {
+  const { data } = await http.get(
+    `/system/detail_select_info`,
+    {
+      user_id: "1555073968740999936",
+    },
+    { loading: false }
+  );
+  const { marketplaces_data, data_source } = { ...data };
+  cardList.value[0].options = marketplaces_data;
+  cardList.value[1].options = data_source;
+
+  const one_product = await http.get(
+    `/system/one_product`,
+    {
+      user_id: "1555073968740999936",
+    },
+    { loading: false }
+  );
+  console.log();
+});
+
+const handle = async (v) => {
+  console.log(`国家/地区：${v[0].value}`);
+  console.log(`类目：${v[1].value}`);
+  console.log(`父Asin：${v[2].value}`);
+  console.log(`评分范围：${v[3].value}`);
+  console.log(`评价渠道：${v[4].value}`);
+  console.log(`时间：${v[5].value}`);
+  const res = await http.get(
+    `/system/search_product`,
+    {
+      // market_place_id: "",
+      // cate_name: "",
+      // cate_level: "",
+      // parent_asin: "",
+      // review_channel: "",
+      flag: 1,
+      user_id: "1555073968740999936",
+    },
+    { loading: true }
+  );
+  tabledatas.data = res.data;
+};
+
 const dateValue = ref("");
 const activeOperation = ref(0);
 const tabs = ["重点问题跟进", "客户反馈分析", "对比分析"];
@@ -38,7 +76,7 @@ const tabs = ["重点问题跟进", "客户反馈分析", "对比分析"];
 <template>
   <div class="goods-detail min-h-full flex-col gap16">
     <div class="query">
-      <QueryCard :card-list="cardList" />
+      <QueryCard :card-list="cardList" @handle="handle" />
     </div>
     <!-- 商品信息 -->
     <div class="goods-info card h130 fbc">

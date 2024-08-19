@@ -93,12 +93,12 @@ const login = (formEl: FormInstance | undefined) => {
     loading.value = true;
     try {
       // 1.执行登录接口
-      const { data } = await loginApi({
-        ...loginForm,
-        password: md5(loginForm.password),
-      });
-      console.log(data, 1111111111);
-      userStore.setToken(data.access_token);
+      // const { data } = await loginApi({
+      //   ...loginForm,
+      //   password: md5(loginForm.password),
+      // });
+      // userStore.setToken(data.access_token);
+      userStore.setToken("123456");
 
       // 2.添加动态路由
       await initDynamicRouter();
