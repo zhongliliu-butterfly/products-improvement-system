@@ -26,7 +26,7 @@ const activeMenu = computed(
 <template>
   <el-container class="layout">
     <el-aside>
-      <div class="aside-box" :style="{ width: isCollapse ? '65px' : '210px' }">
+      <div class="aside-box" :style="{ maxWidth: isCollapse ? '65px' : '210px' }">
         <div class="logo fcc gap4">
           <img class="logo-img" src="@/assets/icons/logo.svg" alt="logo" />
           <div v-show="!isCollapse" class="title flex-col items-center gap4">

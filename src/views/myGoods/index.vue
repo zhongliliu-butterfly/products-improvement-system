@@ -157,15 +157,25 @@ const unfollow = async (row: string) => {
 };
 
 const activeName = ref<string>("first");
-const handleactiveName = (tab: string) => {
+const handleactiveName =async (tab: string,flag:number) => {
   activeName.value = tab;
   console.log(tab);
+  const res = await http.get(
+    `/system/search_product`,
+    {
+      // market_place_id: "",
+      // cate_name: "",
+      // cate_level: "",
+      // parent_asin: "",
+      // review_channel: "",
+      flag: flag,
+      user_id: "1555073968740999936",
+    },
+    { loading: true }
+  );
+  tabledatas.data = res.data;
 };
 
-import type { TabsPaneContext } from "element-plus";
-const handleClick = (tab: TabsPaneContext, event: Event) => {
-  console.log(tab, event);
-};
 
 onBeforeMount(async () => {
   console.log("init query");
@@ -243,18 +253,18 @@ const handle = async (v) => {
           <div class="tableHeader w-full fcc gap20 text-(12 #666)">
             <span
               :class="{ active: activeName === 'all' }"
-              @click="handleactiveName('all')"
+              @click="handleactiveName('all',1)"
               >全部商品</span
             >
             <span
               :class="{ active: activeName === 'myFollow' }"
-              @click="handleactiveName('myFollow')"
+              @click="handleactiveName('myFollow',2)"
               >我的关注</span
             >
             <span
               class="fc gap5"
               :class="{ active: activeName === 'warning' }"
-              @click="handleactiveName('warning')"
+              @click="handleactiveName('warning',1)"
             >
               告警商品
               <svg-icon icon="warning" />
@@ -352,7 +362,7 @@ const handle = async (v) => {
     }
   }
   .name {
-    width: 140px;
+    max-width: 140px;
     white-space: normal;
   }
   :deep(.header-button-lf) {

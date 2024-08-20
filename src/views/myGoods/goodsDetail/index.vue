@@ -3,6 +3,7 @@ import QuestionCard from "./components/questionCard.vue";
 import FeedBack from "./components/feedBack.vue";
 import Comparison from "./components/comparison.vue";
 import http from "@/api";
+import { ElMessage } from "element-plus";
 
 const route = useRoute();
 const goods = route.params.id;
@@ -47,26 +48,37 @@ onBeforeMount(async () => {
 
 const handle = async (v) => {
   console.log(`国家/地区：${v[0].value}`);
-  console.log(`类目：${v[1].value}`);
-  console.log(`父Asin：${v[2].value}`);
-  console.log(`评分范围：${v[3].value}`);
-  console.log(`评价渠道：${v[4].value}`);
-  console.log(`时间：${v[5].value}`);
+  console.log(`数据源：${v[1].value}`);
   const res = await http.get(
-    `/system/search_product`,
+    `/system/focus_follow`,
     {
-      // market_place_id: "",
-      // cate_name: "",
-      // cate_level: "",
-      // parent_asin: "",
-      // review_channel: "",
-      flag: 1,
+      parent_asin: "",
+      market_place_id: "",
+      min_data: "",
+      max_data: "",
+      interval_date: "",
       user_id: "1555073968740999936",
     },
     { loading: true }
   );
-  tabledatas.data = res.data;
 };
+
+const follow = async (row: object) => {
+  const { data } = await http.post(
+    `/system/search_product`,
+    {
+      market_place_id: '',
+      asin: '',
+      u_id: "1555073968740999936",
+    },
+    { loading: false }
+  );
+  console.log("关注：", data);
+};
+
+const originView = ()=>{
+  ElMessage.info('查看原声');
+}
 
 const dateValue = ref("");
 const activeOperation = ref(0);
@@ -84,7 +96,7 @@ const tabs = ["重点问题跟进", "客户反馈分析", "对比分析"];
         <img src="@/assets/images/test-goods.jpeg" class="rounded-4 size-80" />
         <div class="info flex-col self-stretch justify-between text-12">
           <span class="font-600"
-            >Under Armour 安德瑪 男款 Tech Golf Polo 衫1</span
+            >{{ goods }}</span
           >
           <span text="little">亚马逊</span>
           <div class="rate fc gap20">
@@ -100,8 +112,8 @@ const tabs = ["重点问题跟进", "客户反馈分析", "对比分析"];
         </div>
       </div>
       <el-space size="large">
-        <el-button type="primary" size="large"> 关注商品 </el-button>
-        <el-button plain size="large"> 查看原声 </el-button>
+        <el-button type="primary" size="large" @click="follow"> 关注商品 </el-button>
+        <el-button plain size="large" @click="originView"> 查看原声 </el-button>
       </el-space>
     </div>
     <!-- 分析tabs -->
