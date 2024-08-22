@@ -261,7 +261,7 @@ const uploadError = () => {
         color: var(--el-color-info);
         .el-icon {
           font-size: 28px;
-          color: var(--el-text-color-secondary);
+          color: var(--el-text-color-minor);
         }
       }
       .upload-handle {

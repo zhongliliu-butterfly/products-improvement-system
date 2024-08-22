@@ -106,7 +106,7 @@ const columns = reactive<ColumnProps<any>[]>([
     width: 130,
   },
 ]);
-const tabledata = Array.from({ length: 10 }).map((_, index) => ({
+const tabledata = Array.from({ length: 50 }).map((_, index) => ({
   title: "商品名称" + index,
   main_image_url: TestGoods,
   parent_asin: "ASINASINASINASIN",
@@ -156,10 +156,10 @@ const unfollow = async (row: string) => {
   console.log("取关：", data);
 };
 
-const activeName = ref<string>("first");
-const handleactiveName =async (tab: string,flag:number) => {
-  activeName.value = tab;
-  console.log(tab);
+const activeTab = ref(0)
+const tabs = ['全部商品', '我的关注', '告警商品']
+const handleactiveName =async (index: number) => {
+  activeTab.value = index
   const res = await http.get(
     `/system/search_product`,
     {
@@ -168,7 +168,7 @@ const handleactiveName =async (tab: string,flag:number) => {
       // cate_level: "",
       // parent_asin: "",
       // review_channel: "",
-      flag: flag,
+      flag: index,
       user_id: "1555073968740999936",
     },
     { loading: true }
@@ -231,6 +231,8 @@ const handle = async (v) => {
 //     console.log("clear");
 //   });
 // });
+
+
 </script>
 
 <template>
@@ -247,36 +249,31 @@ const handle = async (v) => {
         :border="false"
         row-key="title"
         ize="small"
+        height="calc(100vh - 390px)"
         @row-click="handleRowClick"
       >
         <template #tableHeader>
           <div class="tableHeader w-full fcc gap20 text-(12 #666)">
-            <span
-              :class="{ active: activeName === 'all' }"
-              @click="handleactiveName('all',1)"
-              >全部商品</span
-            >
-            <span
-              :class="{ active: activeName === 'myFollow' }"
-              @click="handleactiveName('myFollow',2)"
-              >我的关注</span
-            >
-            <span
-              class="fc gap5"
-              :class="{ active: activeName === 'warning' }"
-              @click="handleactiveName('warning',1)"
-            >
-              告警商品
-              <svg-icon icon="warning" />
-            </span>
+            <span v-for="(item, index) in tabs" :key="index" class="fc gap5" :class="[index === activeTab ? 'active' : '']" @click="handleactiveName(index)">
+                {{ item }}
+                <svg-icon v-show="index === 2" icon="warning" color="#D40000" />
+              </span>
             <span class="text-(12 #999) ml-auto!">
               全部商品会在此展示，点击关注商品，该商品会归纳到我的关注，告警商品会被标为红色
             </span>
           </div>
         </template>
         <template #title="{ row }">
-          <div class="goods-info fcc gap10 text-12">
-            <img :src="row.main_image_url" alt="" class="size-72" />
+          <div class="goods-info fcc gap10">
+            <div class="relative o-hidden rounded-4 size-72">
+              <div class="absolute bottom-15 w-full fcc bg-#D40000">
+                <span v-if="row.warning" class="text-(12 #fff)">
+                  <svg-icon icon="warning" color="#fff" class="mr0" />
+                  {{ row.warning ? '告警' : '' }}
+                </span>
+              </div>
+              <img :src="row.main_image_url" alt="" class="size-full" />
+            </div>
             <div class="info flex-col gap10">
               <div class="name">
                 {{ row.title }}
@@ -288,10 +285,10 @@ const handle = async (v) => {
           </div>
         </template>
         <template #reviews_ratings="{ row }">
-          <span class="text-#999999">{{ row.reviews_ratings }}</span>
+          <span class="text-minor">{{ row.reviews_ratings }}</span>
         </template>
         <template #return_volume="{ row }">
-          <span class="text-#999999">{{ row.return_volume }}</span>
+          <span class="text-error">{{ row.return_volume }}</span>
         </template>
         <template #return_rate="{ row }">
           <span class="text-error">{{ row.return_rate }}</span>

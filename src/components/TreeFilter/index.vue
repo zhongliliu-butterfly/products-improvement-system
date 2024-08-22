@@ -92,7 +92,7 @@ const toggleTreeNodes = (isExpand: boolean) => {
   if (!nodes)
     return
   for (const node in nodes) {
-    if (nodes.hasOwnProperty(node)) {
+    if (Reflect.has(nodes, node)) {
       nodes[node].expanded = isExpand
     }
   }
@@ -120,7 +120,7 @@ defineExpose({ treeData, treeAllData, treeRef })
       {{ title }}
     </h4>
     <div class="search">
-      <el-input v-model="filterText" placeholder="输入关键字进行过滤" clearable />
+      <el-input v-model="filterText" placeholder="请输入标签名称" clearable />
       <el-dropdown trigger="click">
         <el-icon size="20">
           <More />

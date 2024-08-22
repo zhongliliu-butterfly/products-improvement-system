@@ -14,7 +14,7 @@ const activeName = ref('first')
           </div>
         </el-badge>
       </template>
-      <el-tabs v-model="activeName">
+      <!-- <el-tabs v-model="activeName">
         <el-tab-pane label="通知(5)" name="first">
           <div class="message-list">
             <div class="message-item">
@@ -66,7 +66,7 @@ const activeName = ref('first')
             <div>暂无待办</div>
           </div>
         </el-tab-pane>
-      </el-tabs>
+      </el-tabs> -->
     </el-popover>
   </div>
 </template>
@@ -104,7 +104,7 @@ const activeName = ref('first')
       }
       .message-date {
         font-size: 12px;
-        color: var(--el-text-color-secondary);
+        color: var(--el-text-color-minor);
       }
     }
   }

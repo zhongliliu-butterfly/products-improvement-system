@@ -1,13 +1,17 @@
 /* global css variable */
 $main-color: #003469;
 $main-text-color: #111111;
-$secondary-text-color: #666666;
+$minor-text-color: #666666;
 $little-text-color: #aaaaaa;
 $border-light: #F7F7FA;
+$primary-b: #0073EB;
 :root {
   --primary:#003469;
+  --primary-b:#0073EB;
   --error:#FF3600;
+  --success:#209600;
   --main: #111111;
-  --secondary: #666666;
+  --minor: #666666;
   --little: #aaaaaa;
+  --el-font-size-base:14px;
 }

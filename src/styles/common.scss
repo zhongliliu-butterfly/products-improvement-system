@@ -127,3 +127,37 @@
     padding-left: #{$i}px !important;
   }
 }
+
+/** 问题跟进 反馈 分析tabs样式 */
+.tabs_wrap{
+  @apply  h40 fbc;
+.tabs {
+  @apply fc gap20;
+  > span {
+     color:$minor-text-color;
+     cursor: pointer;
+     &:hover {
+       color: $main-color;
+      }
+      &.active {
+       font-size: 18px;
+       font-weight: bold;
+       color: $main-text-color;
+    }
+  }
+}
+}
+.page_wrapper {
+  @apply flex-col gap16;
+
+  min-height: calc(100vh - 120px)
+}
+.detailBtns {
+  @apply h48 w210 fcc rounded-6 bg-primary p3;
+  >span {
+    @apply flex-1  h-full rounded-4 fcc cur-p text-white;
+    &.active {
+      @apply bg-white text-primary;
+    }
+  }
+}

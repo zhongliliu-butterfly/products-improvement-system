@@ -5,7 +5,7 @@ interface Pageable {
   total: number
 }
 
-interface PaginationProps {
+export interface PaginationProps {
   pageable: Pageable
   handleSizeChange: (size: number) => void
   handleCurrentChange: (currentPage: number) => void
@@ -22,7 +22,7 @@ defineProps<PaginationProps>()
     :page-size="pageable.pageSize"
     :page-sizes="[10, 25, 50, 100]"
     :total="pageable.total"
-    layout="total, sizes, prev, pager, next, jumper"
+    layout="total, sizes, prev, pager, next"
     @size-change="handleSizeChange"
     @current-change="handleCurrentChange"
   />

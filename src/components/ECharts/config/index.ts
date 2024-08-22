@@ -12,6 +12,8 @@ import {
   TooltipComponent,
   TransformComponent,
 } from 'echarts/components'
+
+import 'echarts-wordcloud'
 import { LabelLayout, UniversalTransition } from 'echarts/features'
 import { CanvasRenderer } from 'echarts/renderers'
 import type {

@@ -1,7 +1,6 @@
 <script setup lang='ts'>
 import type { ECOption } from '@/components/ECharts/config'
 
-const value = ref('颜色')
 const option = ref<ECOption>({
   tooltip: {
     trigger: 'axis',
@@ -9,21 +8,31 @@ const option = ref<ECOption>({
       type: 'shadow',
     },
   },
+  legend: {
+    icon: 'circle',
+    itemWidth: 10,
+    itemHeight: 10,
+    right: '0',
+    top: '0',
+  },
+
   grid: {
     left: '3%',
     right: '4%',
     bottom: '3%',
+    top: '12%',
     containLabel: true,
   },
   xAxis:
   {
     type: 'category',
-    data: ['蓝色', '红色', '绿色', '深蓝色', '橙色'],
+    data: ['尺码问题', '版型问题', '材质问题', '质量提问', '产品服务'],
     axisLabel: {
+      show: true,
       color: '#666',
     },
-    axisTick: { show: false },
     axisLine: { show: false },
+    axisTick: { show: false },
   },
   yAxis: {
     type: 'value',
@@ -38,11 +47,8 @@ const option = ref<ECOption>({
   },
   series: [
     {
-      name: 'Direct',
+      name: '正向标签',
       type: 'bar',
-      emphasis: {
-        focus: 'series',
-      },
       itemStyle: {
         borderRadius: [20, 20, 0, 0], // （顺时针左上，右上，右下，左下）
         color:
@@ -62,36 +68,47 @@ const option = ref<ECOption>({
             // global: false, // 缺省为 false
           },
       },
-      barWidth: '40%',
-      data: [320, 332, 301, 334, 390, 330, 320],
+      barWidth: '15%',
+      // barGap: 10,
+      data: [400, 356, 278, 476, 390, 322, 544],
+    },
+    {
+      name: '负向标签',
+      type: 'bar',
+      // emphasis: {
+      //   focus: 'series',
+      // },
+      itemStyle: {
+        borderRadius: [20, 20, 0, 0], // （顺时针左上，右上，右下，左下）
+        color:
+          {
+            type: 'linear',
+            x: 0,
+            y: 0,
+            x2: 0,
+            y2: 1,
+            colorStops: [{
+              offset: 0,
+              color: '#39EBDD', // 0% 处的颜色
+            }, {
+              offset: 1,
+              color: '#0CC2A7', // 100% 处的颜色
+            }],
+            // global: false, // 缺省为 false
+          },
+      },
+      barWidth: '15%',
+      // barGap: 10,
+      data: [600, 556, 478, 276, 190, 512, 674],
     },
   ],
 })
-setTimeout(() => {
-  // @ts-expect-error
-  option.value.xAxis.data[0] = '999'
-  console.log('option', option)
-}, 3000)
 </script>
 
 <template>
-  <div class="card flex-(col 1)">
-    <div class="header fbc">
-      <span>
-        <i class="text-error">TOP1</i> 颜色与描述不符
-      </span>
-      <el-radio-group v-model="value">
-        <el-radio-button label="颜色" value="颜色" />
-        <el-radio-button label="尺码" value="尺码" />
-      </el-radio-group>
-    </div>
-    <div class="desc text-(12 #999)">
-      <span class="leading-20">
-        反馈量：34，占全部反馈占比：3.68%，<br>
-        在蓝色上反馈最多，在红色上该问题反馈占比最大
-      </span>
-    </div>
-    <div class="chart flex-1">
+  <div class="card h-full flex-(col 1)">
+    <span class="text-(18 main) font-600">评论标签</span>
+    <div class="flex-1">
       <ECharts :option="option" />
     </div>
   </div>

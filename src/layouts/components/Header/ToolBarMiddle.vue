@@ -8,7 +8,6 @@ const input = ref('')
   <div class="search">
     <el-input
       v-model="input"
-      size="large"
       style="width: 440px"
       placeholder="请输入您想搜索内容的关键词"
       :suffix-icon="Search"
