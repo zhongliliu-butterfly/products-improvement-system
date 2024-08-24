@@ -68,30 +68,29 @@ const handle = async () => {
 
     // width: 136px;
     .header {
-        height: 40px;
-        padding: 0 10px;
-        color: $main-text-color;
-        border-bottom: 1px solid $border-light;
-      }
-      .body {
-        @apply fcc px-10;
+      height: 40px;
+      padding: 0 10px;
+      color: $main-text-color;
+      border-bottom: 1px solid $border-light;
+    }
+    .body {
+      @apply fcc px-10;
 
-        height: calc(100% - 40px);
-        :deep(.el-select__wrapper){
-          box-shadow: none;
-        }
-        :deep(.el-input__wrapper){
-          box-shadow: none;
-        }
+      height: calc(100% - 40px);
+      :deep(.el-select__wrapper) {
+        box-shadow: none;
+      }
+      :deep(.el-input__wrapper) {
+        box-shadow: none;
       }
     }
+  }
   .search {
     @apply h-full w70px fcc rounded-6 text-white cur-p;
 
-    background: url('@/assets/images/search-bg.png') no-repeat;
+    background: url("@/assets/images/search-bg.png") no-repeat;
     background-size: 100% 100%;
   }
-
 }
 </style>
 

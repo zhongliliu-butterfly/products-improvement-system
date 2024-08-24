@@ -67,8 +67,8 @@ const follow = async (row: object) => {
   const { data } = await http.post(
     `/system/search_product`,
     {
-      market_place_id: '',
-      asin: '',
+      market_place_id: "",
+      asin: "",
       u_id: "1555073968740999936",
     },
     { loading: false }
@@ -76,9 +76,9 @@ const follow = async (row: object) => {
   console.log("关注：", data);
 };
 
-const originView = ()=>{
-  ElMessage.info('查看原声');
-}
+const originView = () => {
+  ElMessage.info("查看原声");
+};
 
 const dateValue = ref("");
 const activeOperation = ref(0);
@@ -95,9 +95,7 @@ const tabs = ["重点问题跟进", "客户反馈分析", "对比分析"];
       <div class="left fc gap12">
         <img src="@/assets/images/test-goods.jpeg" class="rounded-4 size-80" />
         <div class="info flex-col self-stretch justify-between text-12">
-          <span class="font-600"
-            >{{ goods }}</span
-          >
+          <span class="font-600">{{ goods }}</span>
           <span text="little">亚马逊</span>
           <div class="rate fc gap20">
             <el-rate
@@ -112,14 +110,16 @@ const tabs = ["重点问题跟进", "客户反馈分析", "对比分析"];
         </div>
       </div>
       <el-space size="large">
-        <el-button type="primary" size="large" @click="follow"> 关注商品 </el-button>
+        <el-button type="primary" size="large" @click="follow">
+          关注商品
+        </el-button>
         <el-button plain size="large" @click="originView"> 查看原声 </el-button>
       </el-space>
     </div>
     <!-- 分析tabs -->
     <div class="analysis flex-(col 1) gap16">
-      <div class="tabs h40 fbc!">
-        <div class="left fc gap20">
+      <div class="tabs_wrap">
+        <div class="tabs">
           <span
             v-for="(tab, index) in tabs"
             :key="index"
@@ -165,23 +165,22 @@ const tabs = ["重点问题跟进", "客户反馈分析", "对比分析"];
 <style scoped lang='scss'>
 .goods-detail {
   .analysis {
-    .tabs {
-      .left {
-        transition: all 0.2s;
-        span {
-          color: $secondary-text-color;
-          cursor: pointer;
-          &:hover {
-            color: $main-color;
-          }
-          &.active {
-            font-size: 18px;
-            font-weight: bold;
-            color: $main-text-color;
-          }
-        }
-      }
-    }
+    //   .tabs {
+    //     .left {
+    //      >span {
+    //        color:$minor-text-color;
+    //        cursor: pointer;
+    //        &:hover {
+    //          color: $main-color;
+    //         }
+    //         &.active {
+    //          font-size: 18px;
+    //          font-weight: bold;
+    //          color: $main-text-color;
+    //       }
+    //     }
+    //   }
+    // }
   }
 }
 </style>

@@ -7,7 +7,7 @@ const changeCollapse = () => globalStore.setGlobalState('isCollapse', !globalSto
 
 <template>
   <el-icon class="collapse-icon" @click="changeCollapse">
-    <component :is="globalStore.isCollapse ? 'expand' : 'fold'" />
+    <component :is="globalStore.isCollapse ? 'expand' : 'fold'" color="#999" />
   </el-icon>
 </template>
 

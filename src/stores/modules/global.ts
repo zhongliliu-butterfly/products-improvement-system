@@ -51,5 +51,5 @@ export const useGlobalStore = defineStore({
       this.$patch({ [args[0]]: args[1] })
     },
   },
-  persist: piniaPersistConfig('geeker-global'),
+  persist: piniaPersistConfig('global'),
 })

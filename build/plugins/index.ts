@@ -48,7 +48,7 @@ export const createVitePlugins = (viteEnv: ViteEnv): (PluginOption | PluginOptio
     createAutoImport(),
     createComponentPlugin(),
     // vitePWA
-    VITE_PWA && createVitePwa(viteEnv),
+    // VITE_PWA && createVitePwa(viteEnv),
     // 是否生成包预览，分析依赖包大小做优化处理
     VITE_REPORT && (visualizer({ filename: 'stats.html', gzipSize: true, brotliSize: true }) as PluginOption),
   ]

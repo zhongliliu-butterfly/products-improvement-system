@@ -38,12 +38,24 @@ const cardList = ref<QueryCard[]>([
   },
   {
     title: '商品ASIN',
+    type: 'input',
+    attrs: {
+      placeholder: '请输入商品ASIN',
+    },
     icon: 'asin',
     value: '',
   },
   {
     title: '时间',
     icon: 'calendar',
+    type: 'date-picker',
+    attrs: {
+      type: 'daterange',
+      // rangeSeparator: '至',
+      startPlaceholder: '开始日期',
+      endPlaceholder: '结束日期',
+    },
+    style:{'min-width':'250px'},
     value: '',
     span: 5,
   },

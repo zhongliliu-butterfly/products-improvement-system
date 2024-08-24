@@ -39,6 +39,7 @@ export default defineConfig({
   shortcuts: {
     'fcc': 'flex justify-center items-center',
     'fbc': 'flex justify-between items-center',
+    'fjc': 'flex justify-center',
     'fc': 'flex items-center',
     'flex-col': 'flex flex-col',
     'f-col-c': 'flex-col justify-center items-center',
@@ -50,11 +51,13 @@ export default defineConfig({
   },
   theme: {
     colors: {
-      primary: 'var(--primary)',
-      error: 'var(--error)',
-      main: 'var(--main)',
-      secondary: 'var(--secondary)',
-      little: 'var(--little)',
+      'primary': 'var(--primary)',
+      'primary-b': 'var(--primary-b)',
+      'success': 'var(--success)',
+      'error': 'var(--error)',
+      'main': 'var(--main)',
+      'minor': 'var(--minor)',
+      'little': 'var(--little)',
     },
     borderRadius: {
       '4xl': '20px',

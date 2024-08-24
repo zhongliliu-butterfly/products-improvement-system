@@ -75,5 +75,5 @@ export const useTabsStore = defineStore({
       })
     },
   },
-  persist: piniaPersistConfig('geeker-tabs'),
+  persist: piniaPersistConfig('tabs'),
 })

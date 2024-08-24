@@ -1,5 +1,6 @@
 <script setup lang='ts'>
 import { id } from "element-plus/es/locale";
+import CommentTendency from "./components/commentTendency.vue";
 import type { ColumnProps } from "@/components/ProTable/interface";
 import TestGoods from "@/assets/images/test-goods.jpeg";
 import http from "@/api";
@@ -118,12 +119,15 @@ const tabledata = Array.from({ length: 50 }).map((_, index) => ({
   refundRate: "12%",
   id: index + "商品名称1",
 }));
-let tabledatas = reactive({ data: tabledata });
+const tabledatas = reactive({ data: tabledata });
 
-const handleRowClick = async (row: any) => {
-  router.push({ name: "goodsDetail", params: { id: row.title } });
-  // console.log("router", router);
-  console.log("row", row);
+const handleRowClick = async (row: any, col: any) => {
+  console.log("col", col);
+  if (col.property === "operation") return;
+  router.push({
+    name: "goodsDetail",
+    params: { parent_asin: row.parent_asin },
+  });
 };
 
 const toUrl = (url: string) => {
@@ -156,10 +160,11 @@ const unfollow = async (row: string) => {
   console.log("取关：", data);
 };
 
-const activeTab = ref(0)
-const tabs = ['全部商品', '我的关注', '告警商品']
-const handleactiveName =async (index: number) => {
-  activeTab.value = index
+const activeTab = ref(0);
+const tabs = ["全部商品", "我的关注", "告警商品"];
+const tendencyVisible = ref(false);
+const handleactiveName = async (index: number) => {
+  activeTab.value = index;
   const res = await http.get(
     `/system/search_product`,
     {
@@ -168,14 +173,13 @@ const handleactiveName =async (index: number) => {
       // cate_level: "",
       // parent_asin: "",
       // review_channel: "",
-      flag: index,
+      flag: index + 1,
       user_id: "1555073968740999936",
     },
     { loading: true }
   );
   tabledatas.data = res.data;
 };
-
 
 onBeforeMount(async () => {
   console.log("init query");
@@ -231,45 +235,55 @@ const handle = async (v) => {
 //     console.log("clear");
 //   });
 // });
-
-
 </script>
 
 <template>
-  <div class="max-h-full flex-col gap16">
+  <div class="page_wrapper">
     <div class="query">
       <QueryCard :card-list="cardList" ref="myref" @handle="handle" />
     </div>
-    <div class="table-box">
+    <div class="my_goods_list relative">
       <ProTable
         class="proTable"
         :columns="columns"
         :tool-button="false"
         :data="tabledatas.data"
         :border="false"
-        row-key="title"
-        ize="small"
+        row-key="id"
         height="calc(100vh - 390px)"
         @row-click="handleRowClick"
       >
         <template #tableHeader>
-          <div class="tableHeader w-full fcc gap20 text-(12 #666)">
-            <span v-for="(item, index) in tabs" :key="index" class="fc gap5" :class="[index === activeTab ? 'active' : '']" @click="handleactiveName(index)">
+          <div class="tabs_wrap">
+            <div class="tabs">
+              <span
+                v-for="(item, index) in tabs"
+                :key="index"
+                class="fc gap5"
+                :class="[index === activeTab ? 'active' : '']"
+                @click="handleactiveName(index)"
+              >
                 {{ item }}
                 <svg-icon v-show="index === 2" icon="warning" color="#D40000" />
               </span>
+            </div>
+
             <span class="text-(12 #999) ml-auto!">
               全部商品会在此展示，点击关注商品，该商品会归纳到我的关注，告警商品会被标为红色
             </span>
           </div>
         </template>
         <template #title="{ row }">
-          <div class="goods-info fcc gap10">
-            <div class="relative o-hidden rounded-4 size-72">
-              <div class="absolute bottom-15 w-full fcc bg-#D40000">
-                <span v-if="row.warning" class="text-(12 #fff)">
+          <div class="goods-info">
+            <div class="image">
+              <div class="mask">
+                <span v-if="row.warning">
                   <svg-icon icon="warning" color="#fff" class="mr0" />
-                  {{ row.warning ? '告警' : '' }}
+                  {{ row.warning ? "告警" : "" }}
+                </span>
+                <span v-else class="opacity-80% bg-white!">
+                  <svg-icon icon="heart" class="mr0" color="#666" size="14px" />
+                  <i text-minor>已关注</i>
                 </span>
               </div>
               <img :src="row.main_image_url" alt="" class="size-full" />
@@ -330,72 +344,30 @@ const handle = async (v) => {
         <!-- 表格操作 -->
         <template #operation="{ row }">
           <div class="operation flex-col gap-5">
-            <a><svg-icon icon="tendency" />查看趋势</a>
+            <a type="primary" @click="tendencyVisible = true">
+              <svg-icon icon="tendency" size="18px" />查看趋势
+            </a>
             <a @click="toUrl(row.item_link)"
-              ><svg-icon icon="link" />链接直达</a
+              ><svg-icon icon="link" size="18px" />链接直达</a
             >
-            <a @click="follow(row)"><svg-icon icon="heart" />关注商品</a>
-            <a @click="unfollow(row)"><svg-icon icon="unheart" />取消关注</a>
+            <a @click="follow(row)">
+              <svg-icon icon="heart" size="18px" />关注商品
+            </a>
+            <i class="cur-p text-minor" @click="unfollow(row)">
+              <svg-icon icon="unheart" color="#aaa" size="18px" />取消关注
+            </i>
           </div>
         </template>
       </ProTable>
+      <!-- 评论趋势 -->
+      <CommentTendency v-model="tendencyVisible" />
     </div>
   </div>
 </template>
 
 <style scoped lang='scss'>
-.table-box {
-  .tableHeader {
-    span {
-      cursor: pointer;
-      &:hover {
-        color: $main-color;
-      }
-      &.active {
-        font-size: 18px;
-        font-weight: bold;
-        color: $main-text-color;
-      }
-    }
-  }
-  .name {
-    max-width: 140px;
-    white-space: normal;
-  }
-  :deep(.header-button-lf) {
-    width: 100%;
-  }
-  :deep(thead .cell) {
-    font-size: 12px;
-    font-weight: normal;
-    color: #999999;
-  }
-  .negative,
-  .forward {
-    @apply flex-col gap10 o-hidden;
-
-    padding: 0 10px;
-    font-size: 12px;
-    .proportion {
-      // height: 16px;
-      padding: 0 5px;
-
-      // line-height: 16px;
-      color: #ffffff;
-      background-color: #ff6e00;
-      border-radius: 16px;
-    }
-  }
-  .negative .proportion {
-    background-color: #358270;
-  }
-  .operation {
-    a {
-      @apply text-(#0073EB) cur-p;
-
-      margin: 0;
-      font-size: 12px;
-    }
-  }
+@import "./style";
+.el-dialog .el-dialog__header {
+  border-bottom: none;
 }
 </style>

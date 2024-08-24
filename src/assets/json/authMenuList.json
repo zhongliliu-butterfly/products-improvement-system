@@ -16,7 +16,7 @@
       }
     },
     {
-      "path": "/myGoods/goodsDetail/:id",
+      "path": "/myGoods/goodsDetail/:parent_asin",
       "name": "goodsDetail",
       "component": "/myGoods/goodsDetail/index",
       "meta": {

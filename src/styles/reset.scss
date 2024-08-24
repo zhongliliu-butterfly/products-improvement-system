@@ -18,7 +18,11 @@ ul,li {
   list-style: none;
 }
 a{
+  color: var(--primary-b);
   cursor: pointer;
+  &:hover{
+    color: rgb($primary-b, 80%)
+  }
 }
 
 /* 解决 h1 标签在 webkit 内核浏览器中文字大小失效问题 */
