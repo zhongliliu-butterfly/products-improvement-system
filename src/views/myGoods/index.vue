@@ -5,38 +5,81 @@ import type { ColumnProps } from "@/components/ProTable/interface";
 import TestGoods from "@/assets/images/test-goods.jpeg";
 import http from "@/api";
 import { h, onBeforeUnmount, provide, ref, watch } from "vue";
+import { ElMessage } from "element-plus";
+import { k } from "vite/dist/node/types.d-aGj9QkWt";
 
 const myref = ref();
 const router = useRouter();
+
+const filterMethod = (node: any, keyword: string) => {
+  return node.text.toLowerCase().includes(keyword.toLowerCase());
+
+  // if (keyword) {
+  //   const search_cate_res = await http.get(
+  //     `/system/search_cate`,
+  //     {
+  //       filter_cate_name: keyword,
+  //     },
+  //     { loading: false }
+  //   );
+  //   cardList.value[1].options = search_cate_res?.data || [];
+  //   console.log(cardList.value[1].options);
+  // }
+};
+
+const cascader_value_change = (v, i) => {
+  const valuelist: any = [];
+  const a = v[v.length - 1];
+  console.log(a[a.length - 1]);
+  valuelist.push(a[a.length - 1]);
+  // cardList.value[1].value = valuelist;
+};
+
+const remoteMethod = async (query: string) => {
+  if (query) {
+    const search_parent_asin_res = await http.get(
+      `/system/search_parent_asin`,
+      {
+        parent_asin: query,
+        user_id: "1555073968740999936",
+      },
+      { loading: false }
+    );
+    cardList.value[2].options = search_parent_asin_res?.data || [];
+    console.log(search_parent_asin_res.data);
+  }
+};
 
 const cardList = ref<QueryCard[]>([
   {
     title: "国家/地区",
     icon: "country",
     options: [],
-    value: "",
+    isMultiple: true,
   },
   {
     title: "类目",
     icon: "category",
     type: "cascader",
+    filterMethod: filterMethod,
     props: {
       multiple: true,
     },
     attrs: {
       placeholder: "请选择/搜索",
     },
-    value: "",
     span: 4,
+    change: cascader_value_change,
   },
   {
     title: "父ASIN",
     icon: "asin",
-    type: "input",
+    type: "select",
     attrs: {
       placeholder: "请输入父ASIN",
     },
-    value: "",
+    isMultiple: true,
+    remoteMethod: remoteMethod,
   },
   {
     title: "评分范围",
@@ -107,23 +150,12 @@ const columns = reactive<ColumnProps<any>[]>([
     width: 130,
   },
 ]);
-const tabledata = Array.from({ length: 50 }).map((_, index) => ({
-  title: "商品名称" + index,
-  main_image_url: TestGoods,
-  parent_asin: "ASINASINASINASIN",
-  total: "100",
-  refund: "10",
-  star: 4.0,
-  forward: "100",
-  negative: "100",
-  refundRate: "12%",
-  id: index + "商品名称1",
-}));
-const tabledatas = reactive({ data: tabledata });
+
+const tabledatas = reactive({ data: [] });
 
 const handleRowClick = async (row: any, col: any) => {
   console.log("col", col);
-  if (col.property === "operation") return;
+  if (col.property !== "title") return;
   router.push({
     name: "goodsDetail",
     params: { parent_asin: row.parent_asin },
@@ -135,34 +167,48 @@ const toUrl = (url: string) => {
 };
 
 const follow = async (row: object) => {
-  const { data } = await http.post(
+  const { data, msg } = await http.post(
     `/system/search_product`,
     {
       market_place_id: row?.market_place_id,
-      asin: row?.parent_asin,
-      u_id: "1555073968740999936",
+      parent_asin: row?.parent_asin,
+      user_id: "1555073968740999936",
     },
     { loading: false }
   );
-  console.log("关注：", data);
+  ElMessage.success(msg);
 };
 
 const unfollow = async (row: string) => {
-  const { data } = await http.put(
+  const { data, msg } = await http.put(
     `/system/search_product`,
     {
       market_place_id: row?.market_place_id,
-      asin: row?.parent_asin,
-      u_id: "1555073968740999936",
+      parent_asin: row?.parent_asin,
+      user_id: "1555073968740999936",
     },
     { loading: false }
   );
-  console.log("取关：", data);
+  ElMessage.success(msg);
 };
 
 const activeTab = ref(0);
 const tabs = ["全部商品", "我的关注", "告警商品"];
 const tendencyVisible = ref(false);
+
+const opentendencyVisible = async (parent_asin: string) => {
+  const review_trend_res = await http.get(
+    `/system/review_trend`,
+    {
+      parent_asin: parent_asin,
+    },
+    { loading: false }
+  );
+  // const xAia;
+  console.log(review_trend_res.data, 11111111111111111111111111111111);
+  tendencyVisible.value = true;
+};
+
 const handleactiveName = async (index: number) => {
   activeTab.value = index;
   const res = await http.get(
@@ -183,27 +229,25 @@ const handleactiveName = async (index: number) => {
 
 onBeforeMount(async () => {
   console.log("init query");
-  const { data } = await http.get(
-    `/system/prodcut_select_info`,
+  const prodcut_select_info_res = await http.get(
+    `/system/product_select_info`,
     {
-      market_place_id: "",
-      cate_name: "",
-      cate_level: "",
-      parent_asin: "",
-      review_channel: "",
       user_id: "1555073968740999936",
     },
     { loading: false }
   );
   const {
-    market_place_id,
-    cate_name,
-    cate_level,
-    parent_asin,
-    review_channel,
-  } = { ...data };
+    market_place_id = [],
+    cate_name = [],
+    parent_asin = [],
+    review_channel = [],
+  } = {
+    ...prodcut_select_info_res.data,
+  };
+
   cardList.value[0].options = market_place_id;
   cardList.value[1].options = cate_name;
+  cardList.value[2].options = parent_asin;
   cardList.value[4].options = review_channel;
 });
 
@@ -344,7 +388,7 @@ const handle = async (v) => {
         <!-- 表格操作 -->
         <template #operation="{ row }">
           <div class="operation flex-col gap-5">
-            <a type="primary" @click="tendencyVisible = true">
+            <a type="primary" @click="opentendencyVisible(row.parent_asin)">
               <svg-icon icon="tendency" size="18px" />查看趋势
             </a>
             <a @click="toUrl(row.item_link)"

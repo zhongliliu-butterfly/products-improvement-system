@@ -6,7 +6,7 @@ export interface Result {
 
 // 请求响应参数（包含data）
 export interface ResultData<T = any> extends Result {
-  data: T;
+  data: any;
 }
 
 // 分页响应参数
