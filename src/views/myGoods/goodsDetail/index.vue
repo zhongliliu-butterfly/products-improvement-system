@@ -6,17 +6,16 @@ import http from "@/api";
 import { ElMessage } from "element-plus";
 
 const route = useRoute();
-const goods = route.params.id;
+const parent_asin = route.params.parent_asin;
 const market_place_id = route.query.market_place_id;
-console.log("goods", goods);
-console.log("market_place_id", market_place_id);
+const goodInfo = ref({});
 
 const cardList = ref<QueryCard[]>([
   {
     title: "国家/地区",
     icon: "country",
     span: 4,
-    value: "",
+    value: market_place_id,
   },
   {
     title: "数据源",
@@ -26,6 +25,9 @@ const cardList = ref<QueryCard[]>([
   },
 ]);
 
+const dateValue_change = (v) => {
+  console.log(v, 11111111111);
+};
 onBeforeMount(async () => {
   const { data } = await http.get(
     `/system/detail_select_info`,
@@ -41,50 +43,82 @@ onBeforeMount(async () => {
   const one_product = await http.get(
     `/system/one_product`,
     {
-      user_id: "1555073968740999936",
+      parent_asin: parent_asin,
+      market_place_id: market_place_id,
     },
     { loading: false }
   );
-  console.log();
+  goodInfo.value = one_product.data;
+  console.log(goodInfo.value);
 });
 
 const handle = async (v) => {
   console.log(`国家/地区：${v[0].value}`);
   console.log(`数据源：${v[1].value}`);
-  const res = await http.get(
-    `/system/focus_follow`,
-    {
-      parent_asin: "",
-      market_place_id: "",
-      min_data: "",
-      max_data: "",
-      interval_date: "",
-      user_id: "1555073968740999936",
-    },
-    { loading: true }
-  );
+  // const res = await http.get(
+  //   `/system/focus_follow`,
+  //   {
+  //     parent_asin: "",
+  //     market_place_id: "",
+  //     min_data: "",
+  //     max_data: "",
+  //     interval_date: "",
+  //     user_id: "1555073968740999936",
+  //   },
+  //   { loading: true }
+  // );
 };
 
-const follow = async (row: object) => {
-  const { data } = await http.post(
+const follow = async () => {
+  const { data, msg } = await http.post(
     `/system/search_product`,
     {
-      market_place_id: "",
-      asin: "",
-      u_id: "1555073968740999936",
+      market_place_id: market_place_id || cardList.value[0].value,
+      parent_asin: parent_asin,
+      user_id: "1555073968740999936",
     },
     { loading: false }
   );
-  console.log("关注：", data);
+  ElMessage.success(msg);
 };
 
-const originView = () => {
+const originView = async () => {
+  const res = await http.get(
+    `/system/product_detial_reviews`,
+    {
+      parent_asin: parent_asin,
+      market_place_id: market_place_id || cardList.value[0].value,
+      data_source: cardList.value[1].value,
+    },
+    { loading: true }
+  );
   ElMessage.info("查看原声");
 };
 
 const dateValue = ref("");
 const activeOperation = ref(0);
+
 const tabs = ["重点问题跟进", "客户反馈分析", "对比分析"];
+const handle_tab = async (index: number) => {
+  activeOperation.value = index;
+  if (index == 0) {
+    const focus_follow = await http.get(`/system/focus_follow`, {
+      parent_asin: parent_asin,
+      market_place_id: market_place_id || cardList.value[0].value,
+      min_data: dateValue.value[0],
+      max_data: dateValue.value[1],
+      // interval_date: "近一个月",
+    });
+  } else if (index == 1) {
+    // 尺码颜色
+    const color_size_label = await http.get(`/system/color_size_label`, {
+      parent_asin: parent_asin,
+      market_place_id: market_place_id || cardList.value[0].value,
+    });
+    console.log(color_size_label);
+  } else {
+  }
+};
 </script>
 
 <template>
@@ -95,19 +129,19 @@ const tabs = ["重点问题跟进", "客户反馈分析", "对比分析"];
     <!-- 商品信息 -->
     <div class="goods-info card h130 fbc">
       <div class="left fc gap12">
-        <img src="@/assets/images/test-goods.jpeg" class="rounded-4 size-80" />
+        <img :src="goodInfo.main_image_url" class="rounded-4 size-80" />
         <div class="info flex-col self-stretch justify-between text-12">
-          <span class="font-600">{{ goods }}</span>
-          <span text="little">亚马逊</span>
+          <span class="font-600">{{ goodInfo.title }}</span>
+          <span text="little">{{ goodInfo.review_channel }}</span>
           <div class="rate fc gap20">
             <el-rate
-              :model-value="4"
+              :model-value="goodInfo.review_score"
               disabled
               show-score
               score-template="{value}.0"
             />
-            <i text="secondary">529条评价</i>
-            <i text="secondary">189条退货评价</i>
+            <i text="secondary">{{ goodInfo.evaluate_num }}条评价</i>
+            <i text="secondary">{{ goodInfo.review_count }}条退货评价</i>
           </div>
         </div>
       </div>
@@ -126,7 +160,7 @@ const tabs = ["重点问题跟进", "客户反馈分析", "对比分析"];
             v-for="(tab, index) in tabs"
             :key="index"
             :class="{ active: activeOperation === index }"
-            @click="activeOperation = index"
+            @click="handle_tab(index)"
             >{{ tab }}</span
           >
         </div>
@@ -144,6 +178,7 @@ const tabs = ["重点问题跟进", "客户反馈分析", "对比分析"];
             range-separator="-"
             start-placeholder="Start date"
             end-placeholder="End date"
+            @change="dateValue_change"
           />
         </div>
       </div>
