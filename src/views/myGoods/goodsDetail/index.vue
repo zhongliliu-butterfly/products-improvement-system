@@ -7,7 +7,9 @@ import { ElMessage } from "element-plus";
 
 const route = useRoute();
 const goods = route.params.id;
+const market_place_id = route.query.market_place_id;
 console.log("goods", goods);
+console.log("market_place_id", market_place_id);
 
 const cardList = ref<QueryCard[]>([
   {

@@ -6,7 +6,6 @@ import TestGoods from "@/assets/images/test-goods.jpeg";
 import http from "@/api";
 import { h, onBeforeUnmount, provide, ref, watch } from "vue";
 import { ElMessage } from "element-plus";
-import { k } from "vite/dist/node/types.d-aGj9QkWt";
 
 const myref = ref();
 const router = useRouter();
@@ -159,6 +158,7 @@ const handleRowClick = async (row: any, col: any) => {
   router.push({
     name: "goodsDetail",
     params: { parent_asin: row.parent_asin },
+    query:{market_place_id: row.market_place_id}
   });
 };
 
@@ -195,6 +195,9 @@ const unfollow = async (row: string) => {
 const activeTab = ref(0);
 const tabs = ["全部商品", "我的关注", "告警商品"];
 const tendencyVisible = ref(false);
+const tendency_xAxis = ref(Array<any>());
+const tendency_data1 = ref(Array<any>());
+const tendency_data2 = ref(Array<any>());
 
 const opentendencyVisible = async (parent_asin: string) => {
   const review_trend_res = await http.get(
@@ -204,8 +207,15 @@ const opentendencyVisible = async (parent_asin: string) => {
     },
     { loading: false }
   );
-  // const xAia;
-  console.log(review_trend_res.data, 11111111111111111111111111111111);
+  const x: any[] = [], d1:any[] = [], d2:any[] = []
+  for (var i in review_trend_res.data) {
+    x.push(i)
+    d1.push(review_trend_res.data[i].pos)
+    d2.push(review_trend_res.data[i].neg)
+    tendency_xAxis.value = x
+    tendency_data1.value = d1
+    tendency_data2.value = d2
+  }
   tendencyVisible.value = true;
 };
 
@@ -404,7 +414,7 @@ const handle = async (v) => {
         </template>
       </ProTable>
       <!-- 评论趋势 -->
-      <CommentTendency v-model="tendencyVisible" />
+      <CommentTendency v-model="tendencyVisible" :xAxis="tendency_xAxis" :data1="tendency_data1" :data2="tendency_data2"/>
     </div>
   </div>
 </template>

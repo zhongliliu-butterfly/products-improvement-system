@@ -2,20 +2,25 @@
 import type { ECOption } from '@/components/ECharts/config'
 import echarts from '@/components/ECharts/config'
 
+const props = defineProps<{ xAxis:[],data1:[],data2:[]}>();
 const visible = defineModel<boolean>({ required: true })
 const tendencyRef = ref<HTMLDivElement | null>(null)
 onClickOutside(tendencyRef, () => visible.value = false)
-const tendencyOptions = ref<ECOption>({
+const tendencyOptions = reactive<ECOption>({
   title: {
     text: '评论趋势',
     textStyle: {
       fontSize: 18,
+      fontWeight: 600,
       color: '#111111',
     },
   },
   tooltip: {
     trigger: 'axis',
     axisPointer: {
+      label: {
+            backgroundColor: '#6a7985'
+          },
       lineStyle: {
         color: '#ccc',
       },
@@ -25,7 +30,7 @@ const tendencyOptions = ref<ECOption>({
     right: 20,
     icon: 'circle',
     itemGap: 20,
-    textStyle: { fontSize: 14 },
+    textStyle: { fontSize: 14, color: '#CCCCCC'},
     formatter: (name) => {
       if (name === '正向') {
         return '正向 :999'
@@ -51,11 +56,20 @@ const tendencyOptions = ref<ECOption>({
     },
     splitLine: { show: true, lineStyle: { type: 'dashed', color: '#EAEAEA' } },
     axisTick: { show: false },
-    data: ['07/01', '07/10', '07/20', '07/30', '08/10', '08/20'],
+    axisLabel: {
+        fontSize: '12px',
+        color: "#AAAAAA"
+      },
+    data: props.xAxis,
   },
   yAxis: {
     type: 'value',
-    show: false,
+    splitLine: { show: false },
+    show: true,
+      axisLabel: {
+        fontSize: '12px',
+        color: "#AAAAAA"
+      }
   },
   series: [
     {
@@ -82,7 +96,7 @@ const tendencyOptions = ref<ECOption>({
         borderColor: '#fff',
         borderWidth: 2,
       },
-      data: [220, 182, 191, 134, 150, 120],
+      data: props.data1,
     },
     {
       name: '负向',
@@ -108,10 +122,11 @@ const tendencyOptions = ref<ECOption>({
         borderColor: '#fff',
         borderWidth: 2,
       },
-      data: [270, 112, 141, 234, 250, 320],
+      data: props.data2,
     },
   ],
 })
+
 </script>
 
 <template>
@@ -124,6 +139,6 @@ const tendencyOptions = ref<ECOption>({
 
 <style scoped lang='scss'>
 .wrapper {
-  @apply absolute right-180 top-115 z-10 h50% w35% rounded-6 bg-white p16 shadow-xl animated animated-(fade-in);
+  @apply absolute right-160 top-110 z-10 h50% w70% rounded-6 bg-white p16 shadow-xl animated animated-(fade-in);
 }
 </style>

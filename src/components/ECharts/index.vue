@@ -35,8 +35,9 @@ const draw = () => {
 }
 
 watch(props, () => {
-  draw()
-})
+    draw()
+},
+{ deep: true })
 
 const handleClick = (event: ECElementEvent) => props.onClick && props.onClick(event)
 
