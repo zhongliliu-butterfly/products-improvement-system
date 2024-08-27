@@ -4,11 +4,16 @@ import FeedBack from "./components/feedBack.vue";
 import Comparison from "./components/comparison.vue";
 import http from "@/api";
 import { ElMessage } from "element-plus";
+import { c } from "vite/dist/node/types.d-aGj9QkWt";
 
 const route = useRoute();
 const parent_asin = route.params.parent_asin;
 const market_place_id = route.query.market_place_id;
 const goodInfo = ref({});
+const feedback_color = ref([]);
+const feedback_size = ref([]);
+const comparison_options1 = ref([]);
+const comparison_options2 = ref([]);
 
 const cardList = ref<QueryCard[]>([
   {
@@ -20,7 +25,6 @@ const cardList = ref<QueryCard[]>([
   {
     title: "数据源",
     icon: "calendar",
-    value: "",
     span: 4,
   },
 ]);
@@ -104,19 +108,29 @@ const handle_tab = async (index: number) => {
   if (index == 0) {
     const focus_follow = await http.get(`/system/focus_follow`, {
       parent_asin: parent_asin,
-      market_place_id: market_place_id || cardList.value[0].value,
-      min_data: dateValue.value[0],
-      max_data: dateValue.value[1],
-      // interval_date: "近一个月",
+      // market_place_id: market_place_id || cardList.value[0].value,
+      market_place_id: "ATVPDKIKX0DER",
+      min_data: dateValue.value[0]||'2024-08-09',
+      max_data: dateValue.value[1]||'2024-08-10',
+      // interval_date: 0,
     });
   } else if (index == 1) {
     // 尺码颜色
     const color_size_label = await http.get(`/system/color_size_label`, {
       parent_asin: parent_asin,
-      market_place_id: market_place_id || cardList.value[0].value,
+      // market_place_id: market_place_id || cardList.value[0].value,
     });
-    console.log(color_size_label);
+    feedback_color.value = color_size_label.data.color;
+    feedback_size.value = color_size_label.data.size;
   } else {
+    // 对比分析筛选栏
+    const comparative_analysis_select_info = await http.get(`/system/comparative_analysis_select_info`, {
+      parent_asin: parent_asin,
+      flag:1,
+      user_id: "1555073968740999936",
+    });
+    comparison_options1.value = comparative_analysis_select_info.data.market_place
+    comparison_options2.value = comparative_analysis_select_info.data.result
   }
 };
 </script>
@@ -189,10 +203,10 @@ const handle_tab = async (index: number) => {
           <question-card />
         </template>
         <template v-if="activeOperation === 1">
-          <FeedBack />
+          <FeedBack :color="feedback_color" :size="feedback_size"/>
         </template>
         <template v-if="activeOperation === 2">
-          <Comparison />
+          <Comparison :options1="comparison_options1" :options2="comparison_options2"/>
         </template>
       </div>
     </div>

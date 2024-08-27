@@ -1,4 +1,5 @@
 <script setup lang='ts'>
+const props = defineProps<{ size: [], color: [] }>();
 </script>
 
 <template>
@@ -7,16 +8,16 @@
       <el-col class="item">
         <label class="text-little">尺码</label>
         <el-space>
-          <span v-for="it in 6" :key="it" class="tag">
-            X-Large{{ it }}
+          <span v-for="it in size" :key="it" class="tag">
+            {{ it }}
           </span>
         </el-space>
       </el-col>
       <el-col class="item">
         <label class="text-little">颜色</label>
         <el-space>
-          <span v-for="it in 6" :key="it" class="tag">
-            蓝色{{ it }}
+          <span v-for="it in color" :key="it" class="tag">
+            {{ it }}
           </span>
         </el-space>
       </el-col>

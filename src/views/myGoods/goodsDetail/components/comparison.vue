@@ -1,18 +1,10 @@
 <script setup lang='ts'>
+const props = defineProps<{ options1: [], options2:[]}>();
 const formItems = ref<QueryCard[]>([
   {
     title: '国家',
     icon: 'country',
-    options: [
-      {
-        label: '中国',
-        value: '1',
-      },
-      {
-        label: '美国',
-        value: '2',
-      },
-    ],
+    options: props.options1,
     span: 8,
     value: '',
   },
@@ -23,6 +15,7 @@ const formItems = ref<QueryCard[]>([
     attrs: {
       placeholder: '请选择/搜索',
     },
+    options: props.options2,
     span: 8,
   },
 ])
@@ -32,6 +25,35 @@ const comparisonTabs = ref([
     formItems,
   },
 ])
+
+watch(() => props, () => {
+  console.log(111111111111111111111111111111111111111111111111111)
+  comparisonTabs.value = [
+  {
+    label: '商品 VS 商品',
+    formItems:[
+  {
+    title: '国家',
+    icon: 'country',
+    options: props.options1,
+    span: 8,
+    value: '',
+  },
+  {
+    title: '商品ASIN',
+    icon: 'calendar',
+    value: '',
+    attrs: {
+      placeholder: '请选择/搜索',
+    },
+    options: props.options2,
+    span: 8,
+  },
+],
+  },
+]
+})
+
 </script>
 
 <template>
