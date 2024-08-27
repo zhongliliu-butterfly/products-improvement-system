@@ -53,7 +53,6 @@ const cardList = ref<QueryCard[]>([
   {
     title: "国家/地区",
     icon: "country",
-    options: [],
     isMultiple: true,
   },
   {
@@ -158,7 +157,7 @@ const handleRowClick = async (row: any, col: any) => {
   router.push({
     name: "goodsDetail",
     params: { parent_asin: row.parent_asin },
-    query:{market_place_id: row.market_place_id}
+    query: { market_place_id: row.market_place_id },
   });
 };
 
@@ -207,14 +206,16 @@ const opentendencyVisible = async (parent_asin: string) => {
     },
     { loading: false }
   );
-  const x: any[] = [], d1:any[] = [], d2:any[] = []
+  const x: any[] = [],
+    d1: any[] = [],
+    d2: any[] = [];
   for (var i in review_trend_res.data) {
-    x.push(i)
-    d1.push(review_trend_res.data[i].pos)
-    d2.push(review_trend_res.data[i].neg)
-    tendency_xAxis.value = x
-    tendency_data1.value = d1
-    tendency_data2.value = d2
+    x.push(i);
+    d1.push(review_trend_res.data[i].pos);
+    d2.push(review_trend_res.data[i].neg);
+    tendency_xAxis.value = x;
+    tendency_data1.value = d1;
+    tendency_data2.value = d2;
   }
   tendencyVisible.value = true;
 };
@@ -414,7 +415,12 @@ const handle = async (v) => {
         </template>
       </ProTable>
       <!-- 评论趋势 -->
-      <CommentTendency v-model="tendencyVisible" :xAxis="tendency_xAxis" :data1="tendency_data1" :data2="tendency_data2"/>
+      <CommentTendency
+        v-model="tendencyVisible"
+        :xAxis="tendency_xAxis"
+        :data1="tendency_data1"
+        :data2="tendency_data2"
+      />
     </div>
   </div>
 </template>
