@@ -1,6 +1,25 @@
 <!-- 评价分析 -->
 <script setup lang='ts' name='EvaluateAnalyse'>
+import http from "@/api";
 const activeName = ref('negative')
+const route = useRoute();
+const parent_asin = route.params.parent_asin;
+
+onMounted( async () => {
+  // 差评/好评分析
+  const reviews_analysis = await http.get(`/system/reviews_analysis`, {
+    flag:activeName.value==='negative'?0:1,
+    parent_asin: parent_asin,
+    // min_data:"2024-08-09",
+    // max_data:"2024-08-10",
+    // interval_date: dateValue.value,
+    // color:'',
+    // size:''
+  });
+  for (var i in reviews_analysis.data) {
+
+  }
+})
 </script>
 
 <template>

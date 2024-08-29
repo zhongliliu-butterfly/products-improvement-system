@@ -27,7 +27,6 @@ const comparisonTabs = ref([
 ])
 
 watch(() => props, () => {
-  console.log(111111111111111111111111111111111111111111111111111)
   comparisonTabs.value = [
   {
     label: '商品 VS 商品',

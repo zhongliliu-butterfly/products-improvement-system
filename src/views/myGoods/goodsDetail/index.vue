@@ -4,6 +4,17 @@ import FeedBack from "./components/feedBack.vue";
 import Comparison from "./components/comparison.vue";
 import http from "@/api";
 import { ElMessage } from "element-plus";
+interface Questioncard_data {
+  title?: Array<any>;
+  size_rate: Array<any>;
+  color_rate?: Array<any>;
+  size_num?: Array<any>;
+  color_num?: Array<any>;
+  color_xAxis?: Array<any>;
+  color_yAxis?: Array<any>;
+  size_xAxis?: Array<any>;
+  size_yAxis?: Array<any>;
+}
 
 const route = useRoute();
 const parent_asin = route.params.parent_asin;
@@ -13,7 +24,32 @@ const feedback_color = ref([]);
 const feedback_size = ref([]);
 const comparison_options1 = ref([]);
 const comparison_options2 = ref([]);
+const question_card_change_value1 = ref('color')
+const question_card_change_value2 = ref('color')
+const question_card_change_value3 = ref('color')
+const questioncard_data = ref<Questioncard_data>({
+  title: [],
+  size_rate: [],
+  color_rate: [],
+  size_num:[],
+  color_num: [],
+  color_xAxis: [],
+  color_yAxis: [],
+  size_xAxis: [],
+  size_yAxis: [],
+});
+const questioncard_data2 = ref(Object);
+const questioncard_data3 = ref(Object);
 
+const question_card_change1 = (v) => {
+  question_card_change_value1.value = v
+};
+const question_card_change2 = (v) => {
+  question_card_change_value2.value = v
+};
+const question_card_change3 = (v) => {
+  question_card_change_value3.value = v
+};
 const cardList = ref<QueryCard[]>([
   {
     title: "国家/地区",
@@ -109,10 +145,31 @@ const handle_tab = async (index: number) => {
       parent_asin: parent_asin,
       // market_place_id: market_place_id || cardList.value[0].value,
       market_place_id: "ATVPDKIKX0DER",
-      min_data: dateValue.value[0] || "2024-08-09",
-      max_data: dateValue.value[1] || "2024-08-10",
-      // interval_date: 0,
+      min_data:"2024-08-09",
+      max_data:"2024-08-10",
+      // interval_date: dateValue.value,
     });
+    for (var i in focus_follow.data) {
+      const color_xAxis = [], color_yAxis=[] , size_xAxis = [], size_yAxis = []
+      for (var s in focus_follow.data[i].color) {
+        color_xAxis.push(s)
+        color_yAxis.push(focus_follow.data[i].color[s])
+      }
+      for (var c in focus_follow.data[i].size) {
+        size_xAxis.push(c)
+        size_yAxis.push(focus_follow.data[i].size[c])
+      }
+      questioncard_data.value.title.push(i)
+      questioncard_data.value.size_rate.push(focus_follow.data[i].size_ratio)
+      questioncard_data.value.color_rate.push(focus_follow.data[i].color_ratio)
+      questioncard_data.value.size_num.push(focus_follow.data[i].size_num)
+      questioncard_data.value.color_num.push(focus_follow.data[i].color_num)
+      questioncard_data.value.color_xAxis.push(color_xAxis)
+      questioncard_data.value.color_yAxis.push(color_yAxis)
+      questioncard_data.value.size_xAxis.push(size_xAxis)
+      questioncard_data.value.size_yAxis.push(size_yAxis)
+    }
+      console.log(questioncard_data.value);
   } else if (index == 1) {
     // 尺码颜色
     const color_size_label = await http.get(`/system/color_size_label`, {
@@ -120,7 +177,8 @@ const handle_tab = async (index: number) => {
       // market_place_id: market_place_id || cardList.value[0].value,
     });
     feedback_color.value = color_size_label.data.color;
-    feedback_size.value = color_size_label.data.size;
+    feedback_size.value = color_size_label.data.size
+
   } else {
     // 对比分析筛选栏
     const comparative_analysis_select_info = await http.get(
@@ -183,11 +241,11 @@ const handle_tab = async (index: number) => {
         </div>
         <div class="right fc gap12">
           <el-radio-group v-model="dateValue">
-            <el-radio-button label="近一个月" value="近一个月" />
-            <el-radio-button label="近三个月" value="近三个月" />
-            <el-radio-button label="近半年" value="近半年" />
-            <el-radio-button label="近一年" value="近一年" />
-            <el-radio-button label="上架至今" value="上架至今" />
+            <el-radio-button label="近一个月" value="0" />
+            <el-radio-button label="近三个月" value="1" />
+            <el-radio-button label="近半年" value="2" />
+            <el-radio-button label="近一年" value="3" />
+            <el-radio-button label="上架至今" value="4" />
           </el-radio-group>
           <el-date-picker
             v-model="dateValue"
@@ -201,9 +259,25 @@ const handle_tab = async (index: number) => {
       </div>
       <div class="content flex flex-(1) gap16">
         <template v-if="activeOperation === 0">
-          <question-card />
-          <question-card />
-          <question-card />
+          <question-card @question_card_change = "question_card_change1"
+          :title="questioncard_data.title[0]"
+          :number="question_card_change_value1==='color'?questioncard_data.color_num[0]:questioncard_data.size_num[0]"
+          :rate="question_card_change_value1==='color'?questioncard_data.color_rate[0]:questioncard_data.size_rate[0]"
+          :xAxis="question_card_change_value1==='color'?questioncard_data.color_xAxis[0]:questioncard_data.size_xAxis[0]"
+          :yAxis="question_card_change_value1==='color'?questioncard_data.color_yAxis[0]:questioncard_data.size_yAxis[0]"
+            />
+          <question-card @question_card_change = "question_card_change2"
+          :title="questioncard_data.title[1]"
+          :number="question_card_change_value2==='color'?questioncard_data.color_num[1]:questioncard_data.size_num[1]"
+          :rate="question_card_change_value2==='color'?questioncard_data.color_rate[1]:questioncard_data.size_rate[1]"
+          :xAxis="question_card_change_value2==='color'?questioncard_data.color_xAxis[1]:questioncard_data.size_xAxis[1]"
+          :yAxis="question_card_change_value2==='color'?questioncard_data.color_yAxis[1]:questioncard_data.size_yAxis[1]"/>
+          <question-card @question_card_change = "question_card_change3"
+          :title="questioncard_data.title[2]"
+          :number="question_card_change_value3==='color'?questioncard_data.color_num[2]:questioncard_data.size_num[2]"
+          :rate="question_card_change_value3==='color'?questioncard_data.color_rate[2]:questioncard_data.size_rate[2]"
+          :xAxis="question_card_change_value3==='color'?questioncard_data.color_xAxis[2]:questioncard_data.size_xAxis[2]"
+          :yAxis="question_card_change_value3==='color'?questioncard_data.color_yAxis[2]:questioncard_data.size_yAxis[2]"/>
         </template>
         <template v-if="activeOperation === 1">
           <FeedBack :color="feedback_color" :size="feedback_size" />
