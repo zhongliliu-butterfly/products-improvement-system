@@ -5,13 +5,27 @@ export interface ComparisonTabsType {
     label: string;
     formItems: QueryCard[];
   }[];
-  goodsInfo?: any;
 }
 const country_value = ref();
 const asin_value = ref();
+const goodsInfo = ref({
+  title:'',
+  review_channel:'',
+  review_score:0,
+  evaluate_num:'',
+  review_count:''
+})
 const props = defineProps<ComparisonTabsType>();
-const handle = () => {
-  console.log(asin_value.value, country_value.value);
+const handle = async () => {
+  const one_product = await http.get(
+    `/system/one_product`,
+    {
+      parent_asin: asin_value.value||'B0B7MS96L8',
+      market_place_id: country_value.value,
+    },
+    { loading: false }
+  );
+  goodsInfo.value = one_product.data;
 };
 
 const item_change = (card) => {
@@ -72,18 +86,18 @@ const activeName = ref(0);
             <img src="@/assets/images/test-goods.jpeg" size="62" rounded-5 />
             <div class="infos">
               <span class="name font-600">
-                Under Armour 安德瑪 男款 Tech Golf Polo 衫
+                {{goodsInfo.title}}
               </span>
               <div class="rate fc gap20">
-                <i class="text-little">亚马逊</i>
+                <i class="text-little">{{ goodsInfo.review_channel }}</i>
                 <el-rate
-                  :model-value="4"
+                  :model-value="goodsInfo.review_score"
                   disabled
                   show-score
                   score-template="{value}.0"
                 />
-                <i text="#666">529条评价</i>
-                <i text="#666">189条退货评价</i>
+                <i text="#666">{{ goodsInfo.evaluate_num }}条评价</i>
+                <i text="#666">{{ goodsInfo.review_count }}条退货评价</i>
               </div>
             </div>
           </div>

@@ -1,5 +1,6 @@
 <script setup lang='ts'>
 import type { ECOption } from '@/components/ECharts/config'
+const currentIndex = ref(0)
 
 const options = [
   {
@@ -128,8 +129,12 @@ const option = computed<ECOption>(() => ({
 <template>
   <div class="evaluateRadarChart card relative h-full min-h-300">
     <div class="title fbc gap30">
-      <span>1. 一级标签占比</span>
-      <div class="fc gap10">
+      <span fc gap10><i class="fcc border-(1 solid) rounded-1/2 size-20">{{
+          currentIndex + 1
+        }}</i> {{
+          currentIndex + 1
+        }}级标签占比</span>
+      <div class="fc gap10" v-show="currentIndex !== 0">
         <label class="break-keep text-(11 #ccc)">所属上级标签</label>
         <el-select v-model="value" placeholder="请选择" class="w-170!">
           <el-option

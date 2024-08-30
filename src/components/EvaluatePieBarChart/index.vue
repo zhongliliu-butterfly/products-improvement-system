@@ -113,7 +113,7 @@ const value = ref("");
         <i class="fcc border-(1 solid) rounded-1/2 size-20">{{
           currentIndex + 1
         }}</i>
-        一级标签占比
+        {{currentIndex + 1}}级标签占比
       </span>
       <div v-show="currentIndex !== 0" class="fc flex-1 gap10">
         <label class="break-keep text-(11 #ccc)">所属上级标签</label>

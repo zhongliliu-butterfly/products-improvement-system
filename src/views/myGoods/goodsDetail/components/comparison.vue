@@ -1,5 +1,5 @@
 <script setup lang='ts'>
-const props = defineProps<{ options1: []; options2: [] }>();
+const props = defineProps<{ options1: []; options2: [],evaluatePieBarChart_data:[]  }>();
 const formItems = ref<QueryCard[]>([
   {
     title: "国家",
@@ -64,7 +64,7 @@ watch(
   <div class="comparison w-full flex-col gap10">
     <ComparisonTabs :comparison-tabs="comparisonTabs" :goods-info="{}" />
     <el-row class="chart flex-1" :gutter="16">
-      <el-col v-for="it in 3" :key="it" :span="8">
+      <el-col v-for="it in evaluateRadarChart_data" :key="it" :span="8">
         <EvaluateRadarChart />
       </el-col>
     </el-row>

@@ -22,9 +22,8 @@ const remoteMethod = async (query: string) => {
   }
 };
 
-const init_query = async () => {
-  if (activeBtn.value == 0) {
-    const insight_statistics_select_info = await http.get(
+const get_insight_statistics_select_info = async ()=>{
+  const insight_statistics_select_info = await http.get(
       `/system/insight_statistics_select_info`,
       { loading: false }
     );
@@ -32,8 +31,15 @@ const init_query = async () => {
       ...insight_statistics_select_info.data,
     };
 
-    statList.value[0].options = market_place_id;
-  } else {
+    statList.value[0].options = insight_statistics_select_info.data;
+}
+const init_query = async () => {
+    const insight_statistics_select_info = await http.get(
+      `/system/insight_statistics_select_info`,
+      { loading: false }
+    );
+    statList.value[0].options = insight_statistics_select_info.data;
+
     const insight_details_select_info = await http.get(
       `/system/insight_details_select_info`,
       {
@@ -55,10 +61,9 @@ const init_query = async () => {
     detailList.value[1].options = cate_name;
     detailList.value[2].options = review_tags;
     detailList.value[4].options = label_emotion_type;
-    detailList.value[4].options = review_channel;
-    detailList.value[5].options = parent_asin;
+    detailList.value[5].options = review_channel;
+    detailList.value[6].options = parent_asin;
   }
-};
 
 const handle = async (v) => {
   if (activeBtn.value == 0) {
@@ -187,8 +192,8 @@ const detailList = ref<QueryCard[]>([
   },
   {
     title: "商品ASIN",
-    type: "input",
     icon: "asin",
+    type: "select",
     attrs: {
       placeholder: "请输入ASIN",
     },
