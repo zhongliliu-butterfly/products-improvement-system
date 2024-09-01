@@ -60,7 +60,8 @@ const handle_tab_activeName = async (val: any) => {
 provide("handle_tab_activeName", handle_tab_activeName);
 
 const handle_tab_evaluatePieBarChart_select = async (val: any,index) => {
-  evaluatePieBarChart_data.value = await get_industry_feedback_analysis(cardList.value,[])
+  console.log(val,1111111111111111111111111111111111111111111111111111111111,index+1)
+   await get_industry_analysis_parent_label(cardList.value,[],index+1,val)
 };
 provide("handle_tab_evaluatePieBarChart_select", handle_tab_evaluatePieBarChart_select);
 
@@ -93,8 +94,7 @@ const get_industry_feedback_analysis = async (v,a)=>{
   const list = [];
   for (var i in industry_analysis_ring_ratio.data["tags"]) {
     const option_data = [],
-      option_yAxis_data = [],
-      lable_options = {}
+      option_yAxis_data = []
     industry_analysis_ring_ratio.data["tags"][i][0]?.forEach((element:any) => {
       option_yAxis_data.push(`${element.label_ratio}%`);
       option_data.push({
@@ -112,6 +112,22 @@ const get_industry_feedback_analysis = async (v,a)=>{
   }
   return list;
 }
+
+const get_industry_analysis_parent_label= async (v,a,current_level,label_id)=>{
+  const industry_analysis_ring_ratio = await http.get(`/system/industry_analysis_parent_label`,{
+    cate_hierarchy_data: JSON.stringify(a),
+    current_level:current_level,
+    label_id:label_id,
+    label_emotion_type:tab_activeName.value == "negative"?'neg':'pos',
+    brand_name:v[1].value,
+    seller_id:v[2].value,
+    interval_date:v[3].value,
+    min_data:'',
+    max_data:'',
+  });
+  console.log(industry_analysis_ring_ratio.data,1111111111111111111)
+}
+
 const get_industry_analysis_ring_ratio = async (v,a)=>{
   const industry_analysis_ring_ratio = await http.get(`/system/industry_analysis_ring_ratio`,{
     cate_hierarchy_data: JSON.stringify(a),

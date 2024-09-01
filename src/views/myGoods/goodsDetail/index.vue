@@ -93,6 +93,7 @@ const cardList = ref<QueryCard[]>([
     title: "国家/地区",
     icon: "country",
     span: 4,
+    isMultiple: true,
     value: market_place_id,
   },
   {

@@ -9,18 +9,18 @@ export interface ComparisonTabsType {
 const country_value = ref();
 const asin_value = ref();
 const goodsInfo = ref({
-  title:'',
-  review_channel:'',
-  review_score:0,
-  evaluate_num:'',
-  review_count:''
-})
+  title: "",
+  review_channel: "",
+  review_score: 0,
+  evaluate_num: "",
+  review_count: "",
+});
 const props = defineProps<ComparisonTabsType>();
 const handle = async () => {
   const one_product = await http.get(
     `/system/one_product`,
     {
-      parent_asin: asin_value.value||'B0B7MS96L8',
+      parent_asin: asin_value.value,
       market_place_id: country_value.value,
     },
     { loading: false }
@@ -86,7 +86,7 @@ const activeName = ref(0);
             <img src="@/assets/images/test-goods.jpeg" size="62" rounded-5 />
             <div class="infos">
               <span class="name font-600">
-                {{goodsInfo.title}}
+                {{ goodsInfo.title }}
               </span>
               <div class="rate fc gap20">
                 <i class="text-little">{{ goodsInfo.review_channel }}</i>
