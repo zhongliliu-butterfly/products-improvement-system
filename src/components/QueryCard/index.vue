@@ -7,6 +7,11 @@ const handle = async () => {
   emits("handle", props.cardList, cascader_value.value);
 };
 const cascader_value = ref([]);
+
+const filterMethod = (node: any, keyword: string) => {
+  return node.text.toLowerCase().includes(keyword.toLowerCase());
+};
+
 const cascader_change = (key) => {
   cascader_value.value = key.map((v) => {
     return v[v.length - 1];
@@ -45,7 +50,7 @@ const cascader_change = (key) => {
           :options="card.options"
           v-model="card.value"
           filterable
-          :filter-method="card.filterMethod"
+          :filter-method="filterMethod"
           clearable
           @change="cascader_change"
         />

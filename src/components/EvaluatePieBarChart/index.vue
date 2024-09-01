@@ -3,12 +3,18 @@ import type { ECOption } from "@/components/ECharts/config";
 
 interface IProps {
   lable_options?: Array<any>;
-  currentIndex: number;
+  currentIndex: number | string;
   num?: number | string;
   option_yAxis_data?: Array<any>;
   option_data?: Array<any>;
 }
-const props = defineProps<IProps>();
+const props = defineProps<{
+  lable_options: [];
+  currentIndex: 0;
+  num: "";
+  option_yAxis_data: [];
+  option_data: [];
+}>();
 
 const colors = [
   ["#0073EB", "#3088E3", "#569DE7", "#85B7EC"],
@@ -17,6 +23,9 @@ const colors = [
 ];
 const pieOption = ref<ECOption>({
   title: { text: props.num, subtext: "评价量", left: "center", top: "center" },
+  tooltip: {
+    trigger: "item",
+  },
   grid: {
     top: "10%",
     right: "2%",
@@ -42,17 +51,16 @@ const pieOption = ref<ECOption>({
         //   fontWeight: 'bold',
         // },
       },
-
       data: props.option_data,
     },
   ],
 });
 const barOption = ref<ECOption>({
   grid: {
-    top: "15%",
-    right: "2%",
+    top: "5%",
+    right: "20%",
     left: "1%",
-    bottom: "10%",
+    bottom: "1%",
   },
   tooltip: {
     trigger: "axis",
@@ -66,7 +74,14 @@ const barOption = ref<ECOption>({
   },
   yAxis: {
     type: "category",
-    show: false,
+    show: true,
+    position: "right",
+    axisLine: {
+      show: false,
+    },
+    axisTick: {
+      show: false,
+    },
     data: props.option_yAxis_data,
   },
   color: colors[props.currentIndex],
@@ -79,7 +94,7 @@ const barOption = ref<ECOption>({
       label: {
         show: true,
         position: [5, -15],
-        // position: 'top',
+        // position: "top",
         formatter: (params) => {
           // @ts-expect-error
           return `${params.data.name} ${params.data.value}`;
@@ -95,15 +110,114 @@ const barOption = ref<ECOption>({
 });
 const value = ref("");
 
-// watch(
-//   () => props,
-//   () => {
-//     console.log(props, "ddddddddddddddddddddddddddd");
-//   },
-//   {
-//     deep: true,
-//   }
-// );
+watch(
+  () => props,
+  () => {
+    value.value = props.lable_options[0]?.value;
+    pieOption.value = {
+      title: {
+        text: props.num,
+        subtext: "评价量",
+        left: "center",
+        top: "center",
+      },
+      tooltip: {
+        trigger: "item",
+      },
+      grid: {
+        top: "10%",
+        right: "2%",
+        left: "0.3%",
+        bottom: "1%",
+        containLabel: true,
+      },
+      color: colors[props.currentIndex],
+      series: [
+        {
+          name: "Access From",
+          type: "pie",
+          radius: ["70%", "92%"],
+          avoidLabelOverlap: false,
+          label: {
+            show: false,
+            position: "center",
+          },
+          emphasis: {
+            // label: {
+            //   show: true,
+            //   fontSize: 20,
+            //   fontWeight: 'bold',
+            // },
+          },
+          data: props.option_data,
+        },
+      ],
+    };
+    barOption.value = {
+      grid: {
+        top: "5%",
+        right: "20%",
+        left: "1%",
+        bottom: "1%",
+      },
+      tooltip: {
+        trigger: "axis",
+        axisPointer: {
+          type: "shadow",
+        },
+      },
+      xAxis: {
+        type: "value",
+        show: false,
+      },
+      yAxis: {
+        type: "category",
+        show: true,
+        position: "right",
+        axisLine: {
+          show: false,
+        },
+        axisTick: {
+          show: false,
+        },
+        data: props.option_yAxis_data,
+      },
+      color: colors[props.currentIndex],
+
+      series: [
+        {
+          name: "Access From",
+          type: "bar",
+          colorBy: "data",
+          label: {
+            show: true,
+            position: [5, -15],
+            // position: "top",
+            formatter: (params) => {
+              // @ts-expect-error
+              return `${params.data.name} ${params.data.value}`;
+            },
+          },
+          barWidth: "20%",
+          itemStyle: {
+            borderRadius: [20],
+          },
+          data: props.option_data,
+        },
+      ],
+    };
+  },
+  {
+    deep: true,
+  }
+);
+
+const handle_tab_evaluatePieBarChart_select = inject(
+  "handle_tab_evaluatePieBarChart_select"
+);
+const evaluatePieBarChart_select_change = (value) => {
+  handle_tab_evaluatePieBarChart_select(value, Number(props.currentIndex));
+};
 </script>
 
 <template>
@@ -111,18 +225,23 @@ const value = ref("");
     <div class="title fc gap30">
       <span fc gap10>
         <i class="fcc border-(1 solid) rounded-1/2 size-20">{{
-          currentIndex + 1
+          Number(currentIndex) + 1
         }}</i>
-        {{currentIndex + 1}}级标签占比
+        {{ Number(currentIndex) + 1 }}级标签占比
       </span>
-      <div v-show="currentIndex !== 0" class="fc flex-1 gap10">
+      <div v-show="currentIndex != 0" class="fc flex-1 gap10">
         <label class="break-keep text-(11 #ccc)">所属上级标签</label>
-        <el-select v-model="value" placeholder="请选择" class="w-170!">
+        <el-select
+          v-model="value"
+          placeholder="请选择"
+          class="w-170!"
+          @change="evaluatePieBarChart_select_change"
+        >
           <el-option
             v-for="item in lable_options"
             :key="item.value"
-            :label="item.label_name"
-            :value="item.label_id"
+            :label="item.label"
+            :value="item.value"
           />
         </el-select>
       </div>

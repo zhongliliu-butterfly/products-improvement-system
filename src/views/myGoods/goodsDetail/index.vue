@@ -62,10 +62,10 @@ const get_reviews_analysis = async (flag, parent_asin) => {
     const option_data = [],
       option_yAxis_data = [];
     reviews_analysis.data["tags"][i][0]?.forEach((element) => {
-      option_yAxis_data.push(element.label_name);
+      option_yAxis_data.push(`${element.label_ratio}%`);
       option_data.push({
         name: element.label_name,
-        value: element.label_ratio,
+        value: element.num,
       });
     });
     const list_data = {
@@ -227,7 +227,7 @@ const handle_tab = async (index: number) => {
       `/system/comparative_analysis_select_info`,
       {
         parent_asin: parent_asin,
-        flag: 1,
+        flag: 0,
         user_id: "1555073968740999936",
       }
     );

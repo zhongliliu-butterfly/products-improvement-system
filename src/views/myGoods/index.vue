@@ -10,10 +10,6 @@ import { ElMessage } from "element-plus";
 const myref = ref();
 const router = useRouter();
 
-const filterMethod = (node: any, keyword: string) => {
-  return node.text.toLowerCase().includes(keyword.toLowerCase());
-};
-
 const remoteMethod = async (query: string) => {
   if (query) {
     const search_parent_asin_res = await http.get(
@@ -39,7 +35,6 @@ const cardList = ref<QueryCard[]>([
     title: "类目",
     icon: "category",
     type: "cascader",
-    filterMethod: filterMethod,
     props: {
       multiple: true,
     },
@@ -249,7 +244,6 @@ onBeforeMount(async () => {
 });
 
 const handle = async (v, a) => {
-  console.log(a);
   console.log(`国家/地区：${JSON.stringify(v[0].value)}`);
   console.log(`类目：${JSON.stringify(a)}`);
   console.log(`父Asin：${JSON.stringify(v[2].value)}`);

@@ -13,9 +13,6 @@ const dateList = ref([
 const evaluateLineChart_data = ref([]);
 const evaluatePieBarChart_data = ref([]);
 const comment_data = ref([]);
-const filterMethod = (node: any, keyword: string) => {
-  return node.text.toLowerCase().includes(keyword.toLowerCase());
-};
 
 const remoteMethod = async (query: string) => {
   if (query) {
@@ -76,12 +73,12 @@ const get_system_insights_parent_label = async (v) => {
   );
 };
 
-const get_customer_feedback_analysis = async (v) => {
+const get_customer_feedback_analysis = async (v, a) => {
   const customer_feedback_analysis = await http.get(
     `/system/customer_feedback_analysis`,
     {
       user_id: "1555073968740999936",
-      cate_hierarchy_data: JSON.stringify(v[0].value || ["1764989031"]),
+      cate_hierarchy_data: JSON.stringify(a),
       interval_date: v[1].value,
     },
     { loading: true }
@@ -113,7 +110,7 @@ const get_insights_reviews_list = async (v) => {
       user_id: "1555073968740999936",
       flag: comment_tabClick_value.value == "all" ? 1 : 2,
       market_place_id: v[0].value,
-      cate_hierarchy_data: JSON.stringify(v[1].value || ["7147440011"]),
+      cate_hierarchy_data: JSON.stringify(v[1].value),
       review_tags: v[2].value,
       emotion_type: v[4].value,
       review_channel: v[5].value,
@@ -124,12 +121,12 @@ const get_insights_reviews_list = async (v) => {
   );
   comment_data.value = insights_reviews_list.data;
 };
-const handle = async (v) => {
+const handle = async (v, a) => {
   if (activeBtn.value == 0) {
     console.log(`类目：${v[0].value}`);
     console.log(`时间：${v[1].value}`);
     if (activeTab.value == 0) {
-      await get_customer_feedback_analysis(v);
+      await get_customer_feedback_analysis(v, a);
       if (tab_activeName.value == "negative ") {
         console.log("get negative");
       } else {
@@ -163,7 +160,6 @@ const statList = ref<QueryCard[]>([
     title: "类目",
     icon: "category",
     type: "cascader",
-    filterMethod: filterMethod,
     props: {
       multiple: true,
     },
@@ -176,13 +172,7 @@ const statList = ref<QueryCard[]>([
     title: "时间",
     icon: "calendar",
     span: 4,
-    options: [
-      { label: "近一个月", value: "0" },
-      { label: "近三个月", value: "1" },
-      { label: "近半年", value: "2" },
-      { label: "近一年", value: "3" },
-      { label: "上架至今", value: "4" },
-    ],
+    options: dateList.value,
     value: "0",
   },
 ]);
@@ -204,7 +194,6 @@ const detailList = ref<QueryCard[]>([
     title: "类目",
     icon: "category",
     type: "cascader",
-    filterMethod: filterMethod,
     props: {
       multiple: true,
     },
@@ -247,13 +236,7 @@ const detailList = ref<QueryCard[]>([
   {
     title: "时间",
     icon: "calendar",
-    options: [
-      { label: "近一个月", value: "0" },
-      { label: "近三个月", value: "1" },
-      { label: "近半年", value: "2" },
-      { label: "近一年", value: "3" },
-      { label: "上架至今", value: "4" },
-    ],
+    options: dateList.value,
     value: "0",
   },
   // {

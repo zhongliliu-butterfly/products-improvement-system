@@ -7,12 +7,21 @@ const tab_click = (value: any) => {
     handle_tab_activeName(value);
   }
 };
-const evaluatePieBarChart = ref([]);
-const props = defineProps<{ evaluatePieBarChart: [] }>();
+const evaluatePieBarChart0 = ref({});
+const evaluatePieBarChart1 = ref({});
+const evaluatePieBarChart2 = ref({});
+const props = defineProps<{
+  evaluatePieBarChart0: {};
+  evaluatePieBarChart1: {};
+  evaluatePieBarChart2: {};
+}>();
+
 watch(
   () => props,
   () => {
-    evaluatePieBarChart.value = props.evaluatePieBarChart;
+    evaluatePieBarChart0.value = props.evaluatePieBarChart0;
+    evaluatePieBarChart1.value = props.evaluatePieBarChart1;
+    evaluatePieBarChart2.value = props.evaluatePieBarChart2;
   },
   {
     deep: true,
@@ -29,26 +38,52 @@ onMounted(async () => {});
     @tab-click="tab_click"
   >
     <el-tab-pane label="差评分析" name="negative">
-      <EvaluatePieBarChart
-        v-for="(it, index) in evaluatePieBarChart"
-        :key="it"
-        :current-index="index"
-        :lable_options="it?.lable_options"
-        :num="it?.num"
-        :option_yAxis_data="it?.option_yAxis_data"
-        :option_data="it?.option_data"
-      />
+      <template v-if="activeName === 'negative'">
+        <EvaluatePieBarChart
+          :currentIndex="0"
+          :lable_options="evaluatePieBarChart0?.lable_options"
+          :num="evaluatePieBarChart0?.num"
+          :option_yAxis_data="evaluatePieBarChart0?.option_yAxis_data"
+          :option_data="evaluatePieBarChart0?.option_data"
+        />
+        <EvaluatePieBarChart
+          :currentIndex="1"
+          :lable_options="evaluatePieBarChart1?.lable_options"
+          :num="evaluatePieBarChart1?.num"
+          :option_yAxis_data="evaluatePieBarChart1?.option_yAxis_data"
+          :option_data="evaluatePieBarChart1?.option_data"
+        />
+        <EvaluatePieBarChart
+          :currentIndex="2"
+          :lable_options="evaluatePieBarChart2?.lable_options"
+          :num="evaluatePieBarChart2?.num"
+          :option_yAxis_data="evaluatePieBarChart2?.option_yAxis_data"
+          :option_data="evaluatePieBarChart2?.option_data"
+        />
+      </template>
     </el-tab-pane>
     <el-tab-pane label="好评分析" name="good">
       <template v-if="activeName === 'good'">
         <EvaluatePieBarChart
-          v-for="(it, index) in evaluatePieBarChart"
-          :key="it"
-          :current-index="index"
-          :lable_options="it?.lable_options"
-          :num="it?.num"
-          :option_yAxis_data="it?.option_yAxis_data"
-          :option_data="it?.option_data"
+          :currentIndex="0"
+          :lable_options="evaluatePieBarChart0?.lable_options"
+          :num="evaluatePieBarChart0?.num"
+          :option_yAxis_data="evaluatePieBarChart0?.option_yAxis_data"
+          :option_data="evaluatePieBarChart0?.option_data"
+        />
+        <EvaluatePieBarChart
+          :currentIndex="1"
+          :lable_options="evaluatePieBarChart1?.lable_options"
+          :num="evaluatePieBarChart1?.num"
+          :option_yAxis_data="evaluatePieBarChart1?.option_yAxis_data"
+          :option_data="evaluatePieBarChart1?.option_data"
+        />
+        <EvaluatePieBarChart
+          :currentIndex="2"
+          :lable_options="evaluatePieBarChart2?.lable_options"
+          :num="evaluatePieBarChart2?.num"
+          :option_yAxis_data="evaluatePieBarChart2?.option_yAxis_data"
+          :option_data="evaluatePieBarChart2?.option_data"
         />
       </template>
     </el-tab-pane>
