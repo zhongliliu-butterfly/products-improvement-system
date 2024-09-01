@@ -47,9 +47,9 @@ const questioncard_data = ref<Questioncard_data>({
 });
 const feedback_data = ref<any>();
 
-const get_reviews_analysis = async () => {
+const get_reviews_analysis = async (flag, parent_asin) => {
   const reviews_analysis = await http.get(`/system/reviews_analysis`, {
-    flag: tab_activeName.value === "negative" ? 0 : 1,
+    flag: flag,
     parent_asin: parent_asin,
     // min_data:"2024-08-09",
     // max_data:"2024-08-10",
@@ -76,7 +76,7 @@ const get_reviews_analysis = async () => {
     };
     list.push(list_data);
   }
-  feedback_data.value = list;
+  return list;
 };
 
 const question_card_change1 = (v) => {
@@ -220,7 +220,7 @@ const handle_tab = async (index: number) => {
     feedback_color.value = color_size_label.data.color;
     feedback_size.value = color_size_label.data.size;
     // 差评/好评分析
-    get_reviews_analysis();
+    feedback_data.value = await get_reviews_analysis(0, parent_asin);
   } else {
     // 对比分析筛选栏
     const comparative_analysis_select_info = await http.get(
@@ -234,12 +234,19 @@ const handle_tab = async (index: number) => {
     comparison_options1.value =
       comparative_analysis_select_info.data.market_place;
     comparison_options2.value = comparative_analysis_select_info.data.result;
+
+    // 对比分析数据
+    const d1 = await get_reviews_analysis(2, parent_asin);
+    const d2 = await get_reviews_analysis(2, parent_asin);
   }
 };
 
-const handle_tab_activeName = (val: any) => {
+const handle_tab_activeName = async (val: any) => {
   tab_activeName.value = val.props.name;
-  get_reviews_analysis();
+  feedback_data.value = await get_reviews_analysis(
+    tab_activeName.value === "negative" ? 0 : 1,
+    parent_asin
+  );
 };
 provide("handle_tab_activeName", handle_tab_activeName);
 </script>

@@ -12,26 +12,6 @@ const router = useRouter();
 
 const filterMethod = (node: any, keyword: string) => {
   return node.text.toLowerCase().includes(keyword.toLowerCase());
-
-  // if (keyword) {
-  //   const search_cate_res = await http.get(
-  //     `/system/search_cate`,
-  //     {
-  //       filter_cate_name: keyword,
-  //     },
-  //     { loading: false }
-  //   );
-  //   cardList.value[1].options = search_cate_res?.data || [];
-  //   console.log(cardList.value[1].options);
-  // }
-};
-
-const cascader_value_change = (v, i) => {
-  const valuelist: any = [];
-  const a = v[v.length - 1];
-  console.log(a[a.length - 1]);
-  valuelist.push(a[a.length - 1]);
-  // cardList.value[1].value = valuelist;
 };
 
 const remoteMethod = async (query: string) => {
@@ -67,7 +47,6 @@ const cardList = ref<QueryCard[]>([
       placeholder: "请选择/搜索",
     },
     span: 4,
-    change: cascader_value_change,
   },
   {
     title: "父ASIN",
@@ -100,7 +79,14 @@ const cardList = ref<QueryCard[]>([
     title: "时间",
     icon: "calendar",
     span: 4,
-    value: "",
+    options: [
+      { label: "近一个月", value: "0" },
+      { label: "近三个月", value: "1" },
+      { label: "近半年", value: "2" },
+      { label: "近一年", value: "3" },
+      { label: "上架至今", value: "4" },
+    ],
+    value: "0",
   },
 ]);
 const columns = reactive<ColumnProps<any>[]>([
@@ -262,21 +248,26 @@ onBeforeMount(async () => {
   cardList.value[4].options = review_channel;
 });
 
-const handle = async (v) => {
-  console.log(`国家/地区：${v[0].value}`);
-  console.log(`类目：${v[1].value}`);
-  console.log(`父Asin：${v[2].value}`);
+const handle = async (v, a) => {
+  console.log(a);
+  console.log(`国家/地区：${JSON.stringify(v[0].value)}`);
+  console.log(`类目：${JSON.stringify(a)}`);
+  console.log(`父Asin：${JSON.stringify(v[2].value)}`);
   console.log(`评分范围：${v[3].value}`);
   console.log(`评价渠道：${v[4].value}`);
   console.log(`时间：${v[5].value}`);
   const res = await http.get(
     `/system/search_product`,
     {
-      // market_place_id: "",
-      // cate_name: "",
-      // cate_level: "",
-      // parent_asin: "",
-      // review_channel: "",
+      market_place_id: JSON.stringify(v[0].value),
+      cate_hierarchy_data: JSON.stringify(a),
+      parent_asin: JSON.stringify(v[2].value),
+      min_score: v[3].value[0],
+      max_score: v[3].value[1],
+      review_channel: v[4].value,
+      interval_date: v[5].value,
+      min_data: "",
+      max_data: "",
       flag: 1,
       user_id: "1555073968740999936",
     },

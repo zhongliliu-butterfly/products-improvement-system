@@ -40,7 +40,8 @@ const cardList = ref<QueryCard[]>([
   },
 ])
 const activeTab = ref(0)
-const tabs = ['行业反馈分析', '对比分析']
+// const tabs = ['行业反馈分析', '对比分析']
+const tabs = ['行业反馈分析']
 const titleRender = (type: 'opposite' | 'self') => {
   return (card: QueryCard) => {
     return (
@@ -137,13 +138,23 @@ const comparisonTabs = ref([
     <div class="content f-col-16">
       <div class="tabs_wrap">
         <div class="tabs">
-          <span v-for="(item, index) in tabs" :key="index" :class="{ active: index === activeTab }" @click="activeTab = index">{{ item }}</span>
+          <span
+            v-for="(item, index) in tabs"
+            :key="index"
+            :class="{ active: index === activeTab }"
+            @click="activeTab = index"
+            >{{ item }}</span
+          >
         </div>
       </div>
       <!-- 行业反馈分析 -->
       <div v-if="activeTab === 0" class="f-col-16">
         <div class="feedback h280 fc gap20">
-          <EvaluateLineChart v-for="(item, index) in 3" :key="index" class="flex-1" />
+          <EvaluateLineChart
+            v-for="(item, index) in 3"
+            :key="index"
+            class="flex-1"
+          />
         </div>
         <el-row class="card flex-1">
           <el-col>
@@ -152,24 +163,24 @@ const comparisonTabs = ref([
         </el-row>
       </div>
       <!-- 对比分析 -->
-      <div v-else class="f-col-16">
+      <!-- <div v-else class="f-col-16">
         <ComparisonTabs :comparison-tabs="comparisonTabs" />
         <el-row class="chart flex-1" :gutter="16">
           <el-col v-for="it in 3" :key="it" :span="8">
             <EvaluateRadarChart />
           </el-col>
         </el-row>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
 
 <style scoped lang='scss'>
 .f-col-16 {
-  @apply  flex-(col 1) gap16;
+  @apply flex-(col 1) gap16;
 }
 .analyse {
-  .vs{
+  .vs {
     @apply fcc size-full;
   }
 }

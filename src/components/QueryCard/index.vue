@@ -4,8 +4,13 @@ const props = defineProps<{ cardList: QueryCard[] }>();
 const emits = defineEmits(["handle"]);
 const loading = ref(false);
 const handle = async () => {
-  console.log("handle", props.cardList);
-  emits("handle", props.cardList);
+  emits("handle", props.cardList, cascader_value.value);
+};
+const cascader_value = ref([]);
+const cascader_change = (key) => {
+  cascader_value.value = key.map((v) => {
+    return v[v.length - 1];
+  });
 };
 </script>
 
@@ -42,7 +47,7 @@ const handle = async () => {
           filterable
           :filter-method="card.filterMethod"
           clearable
-          @change="card.change"
+          @change="cascader_change"
         />
         <component
           v-else

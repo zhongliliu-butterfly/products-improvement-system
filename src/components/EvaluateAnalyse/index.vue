@@ -33,10 +33,10 @@ onMounted(async () => {});
         v-for="(it, index) in evaluatePieBarChart"
         :key="it"
         :current-index="index"
-        :lable_options="it.lable_options"
-        :num="it.num"
-        :option_yAxis_data="it.option_yAxis_data"
-        :option_data="it.option_data"
+        :lable_options="it?.lable_options"
+        :num="it?.num"
+        :option_yAxis_data="it?.option_yAxis_data"
+        :option_data="it?.option_data"
       />
     </el-tab-pane>
     <el-tab-pane label="好评分析" name="good">
@@ -45,10 +45,10 @@ onMounted(async () => {});
           v-for="(it, index) in evaluatePieBarChart"
           :key="it"
           :current-index="index"
-          :lable_options="it.lable_options"
-          :num="it.num"
-          :option_yAxis_data="it.option_yAxis_data"
-          :option_data="it.option_data"
+          :lable_options="it?.lable_options"
+          :num="it?.num"
+          :option_yAxis_data="it?.option_yAxis_data"
+          :option_data="it?.option_data"
         />
       </template>
     </el-tab-pane>
