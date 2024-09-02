@@ -52,6 +52,7 @@ onMounted(async () => {});
           :num="evaluatePieBarChart1?.num"
           :option_yAxis_data="evaluatePieBarChart1?.option_yAxis_data"
           :option_data="evaluatePieBarChart1?.option_data"
+          :selected_value = "evaluatePieBarChart1?.selected_value"
         />
         <EvaluatePieBarChart
           :currentIndex="2"
@@ -59,6 +60,7 @@ onMounted(async () => {});
           :num="evaluatePieBarChart2?.num"
           :option_yAxis_data="evaluatePieBarChart2?.option_yAxis_data"
           :option_data="evaluatePieBarChart2?.option_data"
+          :selected_value = "evaluatePieBarChart2?.selected_value"
         />
       </template>
     </el-tab-pane>
@@ -77,6 +79,7 @@ onMounted(async () => {});
           :num="evaluatePieBarChart1?.num"
           :option_yAxis_data="evaluatePieBarChart1?.option_yAxis_data"
           :option_data="evaluatePieBarChart1?.option_data"
+          :selected_value = "evaluatePieBarChart1?.selected_value"
         />
         <EvaluatePieBarChart
           :currentIndex="2"
@@ -84,6 +87,7 @@ onMounted(async () => {});
           :num="evaluatePieBarChart2?.num"
           :option_yAxis_data="evaluatePieBarChart2?.option_yAxis_data"
           :option_data="evaluatePieBarChart2?.option_data"
+          :selected_value = "evaluatePieBarChart2?.selected_value"
         />
       </template>
     </el-tab-pane>

@@ -45,7 +45,60 @@ const questioncard_data = ref<Questioncard_data>({
   size_xAxis: [],
   size_yAxis: [],
 });
+const cardList = ref<QueryCard[]>([
+  {
+    title: "国家/地区",
+    icon: "country",
+    span: 4,
+    isMultiple: true,
+    value: market_place_id,
+  },
+  {
+    title: "数据源",
+    icon: "calendar",
+    span: 4,
+  },
+]);
 const feedback_data = ref<any>();
+
+const get_product_detail = async (parent_asin, market_place_id) => {
+  const one_product = await http.get(
+    `/system/one_product`,
+    {
+      parent_asin: parent_asin,
+      market_place_id: JSON.stringify(market_place_id),
+    },
+    { loading: false }
+  );
+  goodInfo.value = one_product.data;
+}
+
+onBeforeMount(async () => {
+  const { data } = await http.get(
+    `/system/detail_select_info`,
+    {
+      user_id: "1555073968740999936",
+    },
+    { loading: false }
+  );
+  const { marketplaces_data, data_source } = { ...data };
+  cardList.value[0].options = marketplaces_data;
+  cardList.value[1].options = data_source;
+  await get_product_detail(parent_asin, [market_place_id]);
+});
+
+const follow = async () => {
+  const { data, msg } = await http.post(
+    `/system/search_product`,
+    {
+      market_place_id: market_place_id,
+      parent_asin: parent_asin,
+      user_id: "1555073968740999936",
+    },
+    { loading: false }
+  );
+  ElMessage.success(msg);
+};
 
 const get_reviews_analysis = async (flag, parent_asin) => {
   const reviews_analysis = await http.get(`/system/reviews_analysis`, {
@@ -88,47 +141,10 @@ const question_card_change2 = (v) => {
 const question_card_change3 = (v) => {
   question_card_change_value3.value = v;
 };
-const cardList = ref<QueryCard[]>([
-  {
-    title: "国家/地区",
-    icon: "country",
-    span: 4,
-    isMultiple: true,
-    value: market_place_id,
-  },
-  {
-    title: "数据源",
-    icon: "calendar",
-    span: 4,
-  },
-]);
 
 const dateValue_change = (v) => {
   console.log(v, 11111111111);
 };
-onBeforeMount(async () => {
-  const { data } = await http.get(
-    `/system/detail_select_info`,
-    {
-      user_id: "1555073968740999936",
-    },
-    { loading: false }
-  );
-  const { marketplaces_data, data_source } = { ...data };
-  cardList.value[0].options = marketplaces_data;
-  cardList.value[1].options = data_source;
-
-  const one_product = await http.get(
-    `/system/one_product`,
-    {
-      parent_asin: parent_asin,
-      market_place_id: market_place_id,
-    },
-    { loading: false }
-  );
-  goodInfo.value = one_product.data;
-  console.log(goodInfo.value);
-});
 
 const handle = async (v) => {
   console.log(`国家/地区：${v[0].value}`);
@@ -145,19 +161,6 @@ const handle = async (v) => {
   //   },
   //   { loading: true }
   // );
-};
-
-const follow = async () => {
-  const { data, msg } = await http.post(
-    `/system/search_product`,
-    {
-      market_place_id: market_place_id || cardList.value[0].value,
-      parent_asin: parent_asin,
-      user_id: "1555073968740999936",
-    },
-    { loading: false }
-  );
-  ElMessage.success(msg);
 };
 
 const originView = async () => {
@@ -265,12 +268,7 @@ provide("handle_tab_activeName", handle_tab_activeName);
           <span class="font-600">{{ goodInfo.title }}</span>
           <span text="little">{{ goodInfo.review_channel }}</span>
           <div class="rate fc gap20">
-            <el-rate
-              :model-value="goodInfo.review_score"
-              disabled
-              show-score
-              score-template="{value}.0"
-            />
+            <el-rate :model-value="goodInfo.review_score" disabled show-score score-template="{value}.0" />
             <i text="secondary">{{ goodInfo.evaluate_num }}条评价</i>
             <i text="secondary">{{ goodInfo.review_count }}条退货评价</i>
           </div>
@@ -287,13 +285,8 @@ provide("handle_tab_activeName", handle_tab_activeName);
     <div class="analysis flex-(col 1) gap16">
       <div class="tabs_wrap">
         <div class="tabs">
-          <span
-            v-for="(tab, index) in tabs"
-            :key="index"
-            :class="{ active: activeOperation === index }"
-            @click="handle_tab(index)"
-            >{{ tab }}</span
-          >
+          <span v-for="(tab, index) in tabs" :key="index" :class="{ active: activeOperation === index }"
+            @click="handle_tab(index)">{{ tab }}</span>
         </div>
         <div class="right fc gap12">
           <el-radio-group v-model="dateValue">
@@ -303,103 +296,57 @@ provide("handle_tab_activeName", handle_tab_activeName);
             <el-radio-button label="近一年" value="3" />
             <el-radio-button label="上架至今" value="4" />
           </el-radio-group>
-          <el-date-picker
-            v-model="dateValue"
-            type="daterange"
-            range-separator="-"
-            start-placeholder="Start date"
-            end-placeholder="End date"
-            @change="dateValue_change"
-          />
+          <el-date-picker v-model="dateValue" type="daterange" range-separator="-" start-placeholder="Start date"
+            end-placeholder="End date" @change="dateValue_change" />
         </div>
       </div>
       <div class="content flex flex-(1) gap16">
         <template v-if="activeOperation === 0">
-          <question-card
-            @question_card_change="question_card_change1"
-            :title="questioncard_data.title[0]"
-            :number="
-              question_card_change_value1 === 'color'
-                ? questioncard_data.color_num[0]
-                : questioncard_data.size_num[0]
-            "
-            :rate="
-              question_card_change_value1 === 'color'
-                ? questioncard_data.color_rate[0]
-                : questioncard_data.size_rate[0]
-            "
-            :xAxis="
-              question_card_change_value1 === 'color'
+          <question-card @question_card_change="question_card_change1" :title="questioncard_data.title[0]" :number="question_card_change_value1 === 'color'
+            ? questioncard_data.color_num[0]
+            : questioncard_data.size_num[0]
+            " :rate="question_card_change_value1 === 'color'
+              ? questioncard_data.color_rate[0]
+              : questioncard_data.size_rate[0]
+              " :xAxis="question_card_change_value1 === 'color'
                 ? questioncard_data.color_xAxis[0]
                 : questioncard_data.size_xAxis[0]
-            "
-            :yAxis="
-              question_card_change_value1 === 'color'
-                ? questioncard_data.color_yAxis[0]
-                : questioncard_data.size_yAxis[0]
-            "
-          />
-          <question-card
-            @question_card_change="question_card_change2"
-            :title="questioncard_data.title[1]"
-            :number="
-              question_card_change_value2 === 'color'
-                ? questioncard_data.color_num[1]
-                : questioncard_data.size_num[1]
-            "
-            :rate="
-              question_card_change_value2 === 'color'
-                ? questioncard_data.color_rate[1]
-                : questioncard_data.size_rate[1]
-            "
-            :xAxis="
-              question_card_change_value2 === 'color'
+                " :yAxis="question_card_change_value1 === 'color'
+                  ? questioncard_data.color_yAxis[0]
+                  : questioncard_data.size_yAxis[0]
+                  " />
+          <question-card @question_card_change="question_card_change2" :title="questioncard_data.title[1]" :number="question_card_change_value2 === 'color'
+            ? questioncard_data.color_num[1]
+            : questioncard_data.size_num[1]
+            " :rate="question_card_change_value2 === 'color'
+              ? questioncard_data.color_rate[1]
+              : questioncard_data.size_rate[1]
+              " :xAxis="question_card_change_value2 === 'color'
                 ? questioncard_data.color_xAxis[1]
                 : questioncard_data.size_xAxis[1]
-            "
-            :yAxis="
-              question_card_change_value2 === 'color'
-                ? questioncard_data.color_yAxis[1]
-                : questioncard_data.size_yAxis[1]
-            "
-          />
-          <question-card
-            @question_card_change="question_card_change3"
-            :title="questioncard_data.title[2]"
-            :number="
-              question_card_change_value3 === 'color'
-                ? questioncard_data.color_num[2]
-                : questioncard_data.size_num[2]
-            "
-            :rate="
-              question_card_change_value3 === 'color'
-                ? questioncard_data.color_rate[2]
-                : questioncard_data.size_rate[2]
-            "
-            :xAxis="
-              question_card_change_value3 === 'color'
+                " :yAxis="question_card_change_value2 === 'color'
+                  ? questioncard_data.color_yAxis[1]
+                  : questioncard_data.size_yAxis[1]
+                  " />
+          <question-card @question_card_change="question_card_change3" :title="questioncard_data.title[2]" :number="question_card_change_value3 === 'color'
+            ? questioncard_data.color_num[2]
+            : questioncard_data.size_num[2]
+            " :rate="question_card_change_value3 === 'color'
+              ? questioncard_data.color_rate[2]
+              : questioncard_data.size_rate[2]
+              " :xAxis="question_card_change_value3 === 'color'
                 ? questioncard_data.color_xAxis[2]
                 : questioncard_data.size_xAxis[2]
-            "
-            :yAxis="
-              question_card_change_value3 === 'color'
-                ? questioncard_data.color_yAxis[2]
-                : questioncard_data.size_yAxis[2]
-            "
-          />
+                " :yAxis="question_card_change_value3 === 'color'
+                  ? questioncard_data.color_yAxis[2]
+                  : questioncard_data.size_yAxis[2]
+                  " />
         </template>
         <template v-if="activeOperation === 1">
-          <FeedBack
-            :color="feedback_color"
-            :size="feedback_size"
-            :evaluatePieBarChart_data="feedback_data"
-          />
+          <FeedBack :color="feedback_color" :size="feedback_size" :evaluatePieBarChart_data="feedback_data" />
         </template>
         <template v-if="activeOperation === 2">
-          <Comparison
-            :options1="comparison_options1"
-            :options2="comparison_options2"
-          />
+          <Comparison :options1="comparison_options1" :options2="comparison_options2" />
         </template>
       </div>
     </div>

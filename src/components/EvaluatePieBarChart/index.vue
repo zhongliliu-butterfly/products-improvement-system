@@ -7,6 +7,7 @@ interface IProps {
   num?: number | string;
   option_yAxis_data?: Array<any>;
   option_data?: Array<any>;
+  selected_value?: string;
 }
 const props = defineProps<{
   lable_options: [];
@@ -14,6 +15,7 @@ const props = defineProps<{
   num: "";
   option_yAxis_data: [];
   option_data: [];
+  selected_value: ""
 }>();
 
 const colors = [
@@ -108,12 +110,12 @@ const barOption = ref<ECOption>({
     },
   ],
 });
-const value = ref("");
+const select_value = ref("");
 
 watch(
   () => props,
   () => {
-    value.value = props.lable_options[0]?.value;
+    select_value.value = props.selected_value;
     pieOption.value = {
       title: {
         text: props.num,
@@ -216,7 +218,8 @@ const handle_tab_evaluatePieBarChart_select = inject(
   "handle_tab_evaluatePieBarChart_select"
 );
 const evaluatePieBarChart_select_change = (value) => {
-  handle_tab_evaluatePieBarChart_select(value, Number(props.currentIndex));
+  const emit_data = { lable_options: props.lable_options, selected_value: value, currentIndex: props.currentIndex }
+  handle_tab_evaluatePieBarChart_select(emit_data);
 };
 </script>
 
@@ -231,18 +234,8 @@ const evaluatePieBarChart_select_change = (value) => {
       </span>
       <div v-show="currentIndex != 0" class="fc flex-1 gap10">
         <label class="break-keep text-(11 #ccc)">所属上级标签</label>
-        <el-select
-          v-model="value"
-          placeholder="请选择"
-          class="w-170!"
-          @change="evaluatePieBarChart_select_change"
-        >
-          <el-option
-            v-for="item in lable_options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
+        <el-select v-model="select_value" placeholder="请选择" class="w-170!" @change="evaluatePieBarChart_select_change">
+          <el-option v-for="item in lable_options" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
       </div>
     </div>

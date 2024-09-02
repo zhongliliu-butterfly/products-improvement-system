@@ -201,22 +201,30 @@ const opentendencyVisible = async (parent_asin: string) => {
   tendencyVisible.value = true;
 };
 
-const handleactiveName = async (index: number) => {
-  activeTab.value = index;
+const get_product_table = async (v, a, flag = 1) => {
   const res = await http.get(
     `/system/search_product`,
     {
-      // market_place_id: "",
-      // cate_name: "",
-      // cate_level: "",
-      // parent_asin: "",
-      // review_channel: "",
-      flag: index + 1,
+      market_place_id: JSON.stringify(v[0].value),
+      cate_hierarchy_data: JSON.stringify(a),
+      parent_asin: JSON.stringify(v[2].value),
+      min_score: v[3].value[0],
+      max_score: v[3].value[1],
+      review_channel: v[4].value,
+      interval_date: v[5].value,
+      min_data: "",
+      max_data: "",
+      flag: flag,
       user_id: "1555073968740999936",
     },
     { loading: true }
   );
   tabledatas.data = res.data;
+};
+
+const handleactiveName = async (index: number) => {
+  activeTab.value = index;
+  await get_product_table(cardList.value, [], index + 1);
 };
 
 onBeforeMount(async () => {
@@ -226,7 +234,7 @@ onBeforeMount(async () => {
     {
       user_id: "1555073968740999936",
     },
-    { loading: false }
+    { loading: true }
   );
   const {
     market_place_id = [],
@@ -241,6 +249,7 @@ onBeforeMount(async () => {
   cardList.value[1].options = cate_name;
   cardList.value[2].options = parent_asin;
   cardList.value[4].options = review_channel;
+  await get_product_table(cardList.value, [], activeTab.value + 1);
 });
 
 const handle = async (v, a) => {
@@ -250,31 +259,8 @@ const handle = async (v, a) => {
   console.log(`评分范围：${v[3].value}`);
   console.log(`评价渠道：${v[4].value}`);
   console.log(`时间：${v[5].value}`);
-  const res = await http.get(
-    `/system/search_product`,
-    {
-      market_place_id: JSON.stringify(v[0].value),
-      cate_hierarchy_data: JSON.stringify(a),
-      parent_asin: JSON.stringify(v[2].value),
-      min_score: v[3].value[0],
-      max_score: v[3].value[1],
-      review_channel: v[4].value,
-      interval_date: v[5].value,
-      min_data: "",
-      max_data: "",
-      flag: 1,
-      user_id: "1555073968740999936",
-    },
-    { loading: true }
-  );
-  tabledatas.data = res.data;
+  await get_product_table(v, a);
 };
-// watch(data, (newVal, oldVal, onCleanup) => {
-//   console.log(newVal, oldVal);
-//   onCleanup(() => {
-//     console.log("clear");
-//   });
-// });
 </script>
 
 <template>
@@ -283,26 +269,13 @@ const handle = async (v, a) => {
       <QueryCard :card-list="cardList" ref="myref" @handle="handle" />
     </div>
     <div class="my_goods_list relative">
-      <ProTable
-        class="proTable"
-        :columns="columns"
-        :tool-button="false"
-        :data="tabledatas.data"
-        :border="false"
-        row-key="id"
-        height="calc(100vh - 390px)"
-        @row-click="handleRowClick"
-      >
+      <ProTable class="proTable" :columns="columns" :tool-button="false" :data="tabledatas.data" :border="false"
+        row-key="id" height="calc(100vh - 390px)" @row-click="handleRowClick">
         <template #tableHeader>
           <div class="tabs_wrap">
             <div class="tabs">
-              <span
-                v-for="(item, index) in tabs"
-                :key="index"
-                class="fc gap5"
-                :class="[index === activeTab ? 'active' : '']"
-                @click="handleactiveName(index)"
-              >
+              <span v-for="(item, index) in tabs" :key="index" class="fc gap5"
+                :class="[index === activeTab ? 'active' : '']" @click="handleactiveName(index)">
                 {{ item }}
                 <svg-icon v-show="index === 2" icon="warning" color="#D40000" />
               </span>
@@ -355,11 +328,7 @@ const handle = async (v, a) => {
         </template>
         <template #forward_3_label="{ row }">
           <div class="forward">
-            <div
-              v-for="item in row.negative_3_labels"
-              :key="item"
-              class="item fc gap5"
-            >
+            <div v-for="item in row.negative_3_labels" :key="item" class="item fc gap5">
               <div class="proportion">
                 {{ item.count }} / {{ item.proportion }}
               </div>
@@ -369,11 +338,7 @@ const handle = async (v, a) => {
         </template>
         <template #negative_3_labels="{ row }">
           <div class="negative">
-            <div
-              v-for="item in row.negative_3_labels"
-              :key="item"
-              class="item fc gap5"
-            >
+            <div v-for="item in row.negative_3_labels" :key="item" class="item fc gap5">
               <div class="proportion">
                 {{ item.count }} / {{ item.proportion }}
               </div>
@@ -387,9 +352,7 @@ const handle = async (v, a) => {
             <a type="primary" @click="opentendencyVisible(row.parent_asin)">
               <svg-icon icon="tendency" size="18px" />查看趋势
             </a>
-            <a @click="toUrl(row.item_link)"
-              ><svg-icon icon="link" size="18px" />链接直达</a
-            >
+            <a @click="toUrl(row.item_link)"><svg-icon icon="link" size="18px" />链接直达</a>
             <a @click="follow(row)">
               <svg-icon icon="heart" size="18px" />关注商品
             </a>
@@ -400,18 +363,15 @@ const handle = async (v, a) => {
         </template>
       </ProTable>
       <!-- 评论趋势 -->
-      <CommentTendency
-        v-model="tendencyVisible"
-        :xAxis="tendency_xAxis"
-        :data1="tendency_data1"
-        :data2="tendency_data2"
-      />
+      <CommentTendency v-model="tendencyVisible" :xAxis="tendency_xAxis" :data1="tendency_data1"
+        :data2="tendency_data2" />
     </div>
   </div>
 </template>
 
 <style scoped lang='scss'>
 @import "./style";
+
 .el-dialog .el-dialog__header {
   border-bottom: none;
 }
