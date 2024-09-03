@@ -1,5 +1,7 @@
 <script setup lang='ts'>
-const props = defineProps<{ options1: []; options2: [],evaluatePieBarChart_data:[]  }>();
+const route = useRoute();
+const parent_asin = route.params.parent_asin;
+const props = defineProps<{ options1: []; options2: [], evaluatePieBarChart_data: [] }>();
 const formItems = ref<QueryCard[]>([
   {
     title: "国家",
@@ -11,7 +13,7 @@ const formItems = ref<QueryCard[]>([
   {
     title: "商品ASIN",
     icon: "calendar",
-    value: "",
+    value: parent_asin,
     attrs: {
       placeholder: "请选择/搜索",
     },
@@ -38,12 +40,13 @@ watch(
             icon: "country",
             options: props.options1,
             span: 8,
-            value: "",
+            isMultiple: true,
+            value: [],
           },
           {
             title: "商品ASIN",
             icon: "calendar",
-            value: "",
+            value: parent_asin,
             attrs: {
               placeholder: "请选择/搜索",
             },
@@ -74,7 +77,7 @@ watch(
 <style scoped lang='scss'>
 .pane {
   .goodsInfo {
-    @apply text-12  fc flex-1 gap20 bg-#F8F8FA rounded-8 px20 py10;
+    @apply text-12 fc flex-1 gap20 bg-#F8F8FA rounded-8 px20 py10;
   }
 }
 </style>

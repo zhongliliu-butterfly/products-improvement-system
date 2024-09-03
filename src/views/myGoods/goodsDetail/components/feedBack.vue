@@ -5,14 +5,8 @@ const props = defineProps<{
   color: [];
   evaluatePieBarChart_data: [];
 }>();
-const active_size = ref("");
-const active_color = ref("");
-const size_click = (v) => {
-  active_size.value = v;
-};
-const color_click = (v) => {
-  active_color.value = v;
-};
+const active_size = ref([]);
+const active_color = ref([]);
 </script>
 
 <template>
@@ -21,37 +15,21 @@ const color_click = (v) => {
       <el-col class="item">
         <label class="text-little">尺码</label>
         <el-space>
-          <span
-            v-for="it in size"
-            :key="it"
-            class="tag"
-            @click="size_click(it)"
-            :class="active_size == it ? 'activetab' : ''"
-          >
-            {{ it }}
-          </span>
+          <el-checkbox-group v-model="active_size"> <el-checkbox-button v-for="item in size" :key="item" class="tag"
+              :label="item" :value="item" /></el-checkbox-group>
         </el-space>
       </el-col>
       <el-col class="item">
         <label class="text-little">颜色</label>
         <el-space>
-          <span
-            v-for="it in color"
-            :key="it"
-            class="tag"
-            @click="color_click(it)"
-            :class="active_color == it ? 'activetab' : ''"
-          >
-            {{ it }}
-          </span>
+          <el-checkbox-group v-model="active_color"> <el-checkbox-button v-for="item in color" :key="item" class="tag"
+              :label="item" :value="item" /></el-checkbox-group>
         </el-space>
       </el-col>
     </el-row>
     <!-- 评价分析tab -->
-    <EvaluateAnalyse
-      class="flex-1"
-      :evaluatePieBarChart="evaluatePieBarChart_data"
-    />
+    <EvaluateAnalyse class="flex-1" :evaluatePieBarChart0="evaluatePieBarChart_data[0]"
+      :evaluatePieBarChart1="evaluatePieBarChart_data[1]" :evaluatePieBarChart2="evaluatePieBarChart_data[2]" />
   </div>
 </template>
 
@@ -59,15 +37,21 @@ const color_click = (v) => {
 .feedback {
   .header {
     border-bottom: 1px solid #f8f8fb;
+
     .item {
       @apply fc gap20 mb16px;
+
       .tag {
-        padding: 8px 20px;
+        margin-right: 20px;
         font-size: 12px;
         color: $main-text-color;
-        border: 1px solid #e4e5eb;
-        border-radius: 6px;
+
+        :deep(.el-checkbox-button__inner) {
+          width: 100px;
+          border-left-color: #dcdfe6 // border: 1px solid #dcdfe6 !important
+        }
       }
+
       .activetab {
         border: 1px solid red;
       }
