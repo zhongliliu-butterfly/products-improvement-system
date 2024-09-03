@@ -269,13 +269,26 @@ const handle = async (v, a) => {
       <QueryCard :card-list="cardList" ref="myref" @handle="handle" />
     </div>
     <div class="my_goods_list relative">
-      <ProTable class="proTable" :columns="columns" :tool-button="false" :data="tabledatas.data" :border="false"
-        row-key="id" height="calc(100vh - 390px)" @row-click="handleRowClick">
+      <ProTable
+        class="proTable"
+        :columns="columns"
+        :tool-button="false"
+        :data="tabledatas.data"
+        :border="false"
+        row-key="id"
+        height="calc(100vh - 390px)"
+        @row-click="handleRowClick"
+      >
         <template #tableHeader>
           <div class="tabs_wrap">
             <div class="tabs">
-              <span v-for="(item, index) in tabs" :key="index" class="fc gap5"
-                :class="[index === activeTab ? 'active' : '']" @click="handleactiveName(index)">
+              <span
+                v-for="(item, index) in tabs"
+                :key="index"
+                class="fc gap5"
+                :class="[index === activeTab ? 'active' : '']"
+                @click="handleactiveName(index)"
+              >
                 {{ item }}
                 <svg-icon v-show="index === 2" icon="warning" color="#D40000" />
               </span>
@@ -328,7 +341,11 @@ const handle = async (v, a) => {
         </template>
         <template #forward_3_label="{ row }">
           <div class="forward">
-            <div v-for="item in row.negative_3_labels" :key="item" class="item fc gap5">
+            <div
+              v-for="item in row.negative_3_labels"
+              :key="item"
+              class="item fc gap5"
+            >
               <div class="proportion">
                 {{ item.count }} / {{ item.proportion }}
               </div>
@@ -338,7 +355,11 @@ const handle = async (v, a) => {
         </template>
         <template #negative_3_labels="{ row }">
           <div class="negative">
-            <div v-for="item in row.negative_3_labels" :key="item" class="item fc gap5">
+            <div
+              v-for="item in row.negative_3_labels"
+              :key="item"
+              class="item fc gap5"
+            >
               <div class="proportion">
                 {{ item.count }} / {{ item.proportion }}
               </div>
@@ -352,7 +373,9 @@ const handle = async (v, a) => {
             <a type="primary" @click="opentendencyVisible(row.parent_asin)">
               <svg-icon icon="tendency" size="18px" />查看趋势
             </a>
-            <a @click="toUrl(row.item_link)"><svg-icon icon="link" size="18px" />链接直达</a>
+            <a @click="toUrl(row.item_link)"
+              ><svg-icon icon="link" size="18px" />链接直达</a
+            >
             <a @click="follow(row)">
               <svg-icon icon="heart" size="18px" />关注商品
             </a>
@@ -363,15 +386,18 @@ const handle = async (v, a) => {
         </template>
       </ProTable>
       <!-- 评论趋势 -->
-      <CommentTendency v-model="tendencyVisible" :xAxis="tendency_xAxis" :data1="tendency_data1"
-        :data2="tendency_data2" />
+      <CommentTendency
+        v-model="tendencyVisible"
+        :xAxis="tendency_xAxis"
+        :data1="tendency_data1"
+        :data2="tendency_data2"
+      />
     </div>
   </div>
 </template>
 
 <style scoped lang='scss'>
 @import "./style";
-
 .el-dialog .el-dialog__header {
   border-bottom: none;
 }
