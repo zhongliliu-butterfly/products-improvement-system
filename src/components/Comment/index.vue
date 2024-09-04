@@ -25,15 +25,10 @@ const tabClick = (v) => {
       </el-tab-pane>
       <el-tab-pane name="all">
         <template #label>
-          <span>全部({{ comment_data.total }})</span>
+          <span>全部({{ comment_data.total || comment_data.reviews?.length }})</span>
         </template>
         <div class="content max-h-full o-auto p10">
-          <CommentItem
-            v-for="item in comment_data.reviews"
-            :key="item.review_id"
-            :data="item"
-            :translate="switchVal"
-          />
+          <CommentItem v-for="item in comment_data.reviews" :key="item.review_id" :data="item" :translate="switchVal" />
           <!-- TODO: 评论列表无数据 -->
           <el-empty v-show="false" />
         </div>
@@ -43,12 +38,7 @@ const tabClick = (v) => {
           <span>有图片({{ comment_data.total }})</span>
         </template>
         <div class="content p10">
-          <CommentItem
-            v-for="item in comment_data.reviews"
-            :key="item.review_id"
-            :data="item"
-            :translate="switchVal"
-          />
+          <CommentItem v-for="item in comment_data.reviews" :key="item.review_id" :data="item" :translate="switchVal" />
         </div>
       </el-tab-pane>
     </el-tabs>

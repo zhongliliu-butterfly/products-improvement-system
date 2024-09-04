@@ -5,6 +5,11 @@ import words from '@/assets/json/wordClound'
 const commentTabs = ['评论词云', '评论列表']
 const activeTab = ref(0)
 const switchVal = ref(false)
+const props = defineProps<{
+  wordList: [],
+  hotWord: [],
+  commentList: []
+}>();
 const options = ref<ECOption>({
   series: [{
     name: 'wordCloud',
@@ -27,10 +32,10 @@ const options = ref<ECOption>({
     textStyle: {
       color() {
         return `rgb(${[
-            Math.round(Math.random() * 160),
-            Math.round(Math.random() * 160),
-            Math.round(Math.random() * 160),
-          ].join(',')})`
+          Math.round(Math.random() * 160),
+          Math.round(Math.random() * 160),
+          Math.round(Math.random() * 160),
+        ].join(',')})`
       },
       emphasis: {
         shadowBlur: 10,
@@ -80,12 +85,8 @@ const handleCurrentChange = (curPage: number) => {
     <div class="header fc">
       <div class="tabs_wrap">
         <div class="tabs">
-          <span
-            v-for="(tab, index) in commentTabs"
-            :key="index"
-            :class="{ active: index === activeTab }"
-            @click="activeTab = index"
-          >
+          <span v-for="(tab, index) in commentTabs" :key="index" :class="{ active: index === activeTab }"
+            @click="activeTab = index">
             {{ tab }}
           </span>
         </div>
@@ -109,21 +110,12 @@ const handleCurrentChange = (curPage: number) => {
       </ul>
     </div>
     <div v-show="activeTab === 1" class="list">
-      <el-table
-        size="small"
-        :data="tableData"
-        style="width: 100%"
-        height="200"
-        row-key="id"
-        @selection-change="handleSelectionChange"
-      >
+      <el-table size="small" :data="tableData" style="width: 100%" height="200" row-key="id"
+        @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" />
         <el-table-column label="评论词语" prop="word" />
         <el-table-column label="频次" prop="count" width="150" />
-        <el-table-column
-          label="操作"
-          width="150"
-        >
+        <el-table-column label="操作" width="150">
           <a class="mr10 text-primary-b">
             添加标签
           </a>
@@ -132,17 +124,19 @@ const handleCurrentChange = (curPage: number) => {
           </a>
         </el-table-column>
       </el-table>
-      <Pagination class="h40 items-center justify-end" :pageable size="small" :handle-size-change :handle-current-change />
+      <Pagination class="h40 items-center justify-end" :pageable size="small" :handle-size-change
+        :handle-current-change />
     </div>
   </div>
 </template>
 
 <style scoped lang='scss'>
 .header {
-  .right{
+  .right {
     // --el-color-primary:var(--primary-b);
   }
 }
+
 .content {
   .list-item {
     @apply size-20 bg-primary-b rounded-full fcc cur-p text-white;

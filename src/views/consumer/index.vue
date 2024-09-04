@@ -89,6 +89,16 @@ const comment_tabClick = async (v) => {
   comment_tabClick_value.value = v;
   // await get_insights_reviews_list(cardList.value, []);
 };
+const comment_label = ref({
+  xAxisdata: [],
+  negdata: [],
+  posdata: []
+});
+const comment_list = ref({
+  wordList: [],
+  hotWord: [],
+  commentList: []
+});
 
 onBeforeMount(async () => {
   const insight_details_select_info = await http.get(
@@ -116,9 +126,8 @@ onBeforeMount(async () => {
   cardList.value[6].options = parent_asin;
 });
 
-// 评论标签
-const get_all_first_label = async (v, a) => {
-  const all_first_label = await http.get('/system/all_first_label', {
+const get_all_first_label = async (v, a, return_flag) => {
+  return await http.get('/system/all_first_label', {
     market_place_id: JSON.stringify(v[0].value),
     review_tags: v[2].value,
     cate_hierarchy_data: JSON.stringify(a),
@@ -128,13 +137,33 @@ const get_all_first_label = async (v, a) => {
     interval_date: v[7].value,
     user_id: '1555073968740999936',
     min_data: '',
-    max_data: ''
+    max_data: '',
+    return_flag: return_flag,
+    flag: comment_tabClick_value.value == "all" ? 1 : 2,
   }, { loading: false });
-  console.log(all_first_label.data)
+}
+const get_commentLabel = async (v, a) => {
+  const commentLabel = await get_all_first_label(v, a, 1);
+  const xAxisdata = [], negdata = [], posdata = []
+  commentLabel?.data.forEach(element => {
+    xAxisdata.push(element.label_name);
+    negdata.push(element.neg_count);
+    posdata.push(element.pos_count);
+  });
+}
+const get_commentData = async (v, a) => {
+  const commentData = await get_all_first_label(v, a, 2);
+  comment_data.value = commentData.data;
+}
+const get_commentList = async (v, a) => {
+  const commentList = await get_all_first_label(v, a, 3);
+  comment_list.value = commentList.data;
 }
 
 const handle = async (v, a) => {
-  await get_all_first_label(v, a);
+  get_commentLabel(v, a);
+  get_commentData(v, a);
+  get_commentList(v, a);
 }
 </script>
 
@@ -147,9 +176,11 @@ const handle = async (v, a) => {
     <div v-show="activeBtn === 0" class="consumerSay flex-(col 1) gap16">
       <query-card :card-list="cardList" @handle="handle" />
       <div class="comment h300 fc gap16">
-        <comment-tag />
+        <comment-tag :xAxisdata="comment_label.xAxisdata" :negdata="comment_label.negdata"
+          :posdata="comment_label.posdata" />
         <div class="commentList h-full flex-1">
-          <comment-list />
+          <comment-list :wordList="comment_list?.wordList" :hotWord="comment_list?.hotWord"
+            :commentList="comment_list?.commentList" />
         </div>
       </div>
       <Comment class="comment-card flex-1" :comment_data="comment_data" @tabClick="comment_tabClick" />

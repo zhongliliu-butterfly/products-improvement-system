@@ -115,6 +115,13 @@ onBeforeMount(async () => {
   const { marketplaces_data, data_source } = { ...data };
   cardList.value[0].options = marketplaces_data;
   cardList.value[1].options = data_source;
+  // 尺码颜色
+  const color_size_label = await http.get(`/system/color_size_label`, {
+    parent_asin: parent_asin,
+    market_place_id: JSON.stringify(cardList.value[0].value),
+  });
+  feedback_color.value = color_size_label.data.color;
+  feedback_size.value = color_size_label.data.size;
   await get_product_detail(parent_asin, [market_place_id]);
   await get_focus_follow(cardList.value);
 });
@@ -191,13 +198,6 @@ const handle = async (v) => {
   if (activeOperation.value == 0) {
     await get_focus_follow(v);
   } else if (activeOperation.value == 1) {
-    // 尺码颜色
-    const color_size_label = await http.get(`/system/color_size_label`, {
-      parent_asin: parent_asin,
-      market_place_id: JSON.stringify(v[0].value),
-    });
-    feedback_color.value = color_size_label.data.color;
-    feedback_size.value = color_size_label.data.size;
     evaluatePieBarChart_data.value = await get_reviews_analysis(0, parent_asin);
   } else {
     await get_comparative_analysis_select_info()
