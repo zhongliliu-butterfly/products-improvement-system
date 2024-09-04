@@ -7,6 +7,13 @@ const props = defineProps<{
 }>();
 const active_size = ref([]);
 const active_color = ref([]);
+const emits = defineEmits(["active_size_change", "active_color_change"]);
+const active_size_change = (val) => {
+  emits("active_size_change", val);
+};
+const active_color_change = (val) => {
+  emits("active_color_change", val);
+};
 </script>
 
 <template>
@@ -15,15 +22,15 @@ const active_color = ref([]);
       <el-col class="item">
         <label class="text-little">尺码</label>
         <el-space>
-          <el-checkbox-group v-model="active_size"> <el-checkbox-button v-for="item in size" :key="item" class="tag"
-              :label="item" :value="item" /></el-checkbox-group>
+          <el-checkbox-group v-model="active_size" @change="active_size_change"> <el-checkbox-button
+              v-for="item in size" :key="item" class="tag" :label="item" :value="item" /></el-checkbox-group>
         </el-space>
       </el-col>
       <el-col class="item">
         <label class="text-little">颜色</label>
         <el-space>
-          <el-checkbox-group v-model="active_color"> <el-checkbox-button v-for="item in color" :key="item" class="tag"
-              :label="item" :value="item" /></el-checkbox-group>
+          <el-checkbox-group v-model="active_color" @change="active_color_change"> <el-checkbox-button
+              v-for="item in color" :key="item" class="tag" :label="item" :value="item" /></el-checkbox-group>
         </el-space>
       </el-col>
     </el-row>

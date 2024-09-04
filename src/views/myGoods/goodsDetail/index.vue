@@ -29,6 +29,14 @@ const tabs = ["重点问题跟进", "客户反馈分析", "对比分析"];
 const question_card_change_value1 = ref("color");
 const question_card_change_value2 = ref("color");
 const question_card_change_value3 = ref("color");
+const active_color = ref([]);
+const active_color_change = (val) => {
+  active_color.value = val;
+};
+const active_size = ref([]);
+const active_size_change = (val) => {
+  active_size.value = val;
+};
 const questioncard_data = ref<Questioncard_data>({
   title: [],
   size_rate: [],
@@ -208,8 +216,8 @@ const get_reviews_analysis = async (flag, parent_asin) => {
     interval_date: dateValue.value,
     min_data: "",
     max_data: "",
-    color: '',
-    size: ''
+    color: JSON.stringify(active_color.value),
+    size: JSON.stringify(active_size.value)
   });
   const list = [];
   if (!reviews_analysis.data) return []
@@ -248,8 +256,8 @@ const get_detail_parent_label = async (v, label_emotion_type, current_level, lab
       interval_date: dateValue.value,
       min_data: "",
       max_data: "",
-      color: '',
-      size: ''
+      color: JSON.stringify(active_color.value),
+      size: JSON.stringify(active_size.value)
     },
     { loading: false }
   );
@@ -411,8 +419,8 @@ const handle_tab = async (index: number) => {
                   " />
         </template>
         <template v-if="activeOperation === 1">
-          <FeedBack :color="feedback_color" :size="feedback_size"
-            :evaluatePieBarChart_data="evaluatePieBarChart_data" />
+          <FeedBack :color="feedback_color" :size="feedback_size" :evaluatePieBarChart_data="evaluatePieBarChart_data"
+            @active_color_change="active_color_change" @active_size_change="active_size_change" />
         </template>
         <template v-if="activeOperation === 2">
           <Comparison :options1="comparison_options1" :options2="comparison_options2" />

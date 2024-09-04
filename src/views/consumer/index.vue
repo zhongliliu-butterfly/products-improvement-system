@@ -35,7 +35,7 @@ const cardList = ref<QueryCard[]>([
     isMultiple: true,
   },
   {
-    title: "品类",
+    title: "类目",
     icon: "category",
     type: "cascader",
     props: {
@@ -79,7 +79,6 @@ const cardList = ref<QueryCard[]>([
   {
     title: "时间",
     icon: "calendar",
-    span: 4,
     options: dateList.value,
     value: "0",
   },
@@ -88,34 +87,72 @@ const comment_data = ref([]);
 const comment_tabClick_value = ref("all");
 const comment_tabClick = async (v) => {
   comment_tabClick_value.value = v;
-  // await get_insights_reviews_list(detailList.value, []);
+  // await get_insights_reviews_list(cardList.value, []);
 };
+
+onBeforeMount(async () => {
+  const insight_details_select_info = await http.get(
+    `/system/insight_details_select_info`,
+    {
+      user_id: "1555073968740999936",
+    },
+    { loading: false }
+  );
+  const {
+    market_place_id = [],
+    cate_name = [],
+    parent_asin = [],
+    review_channel = [],
+    label_emotion_type = [],
+    review_tags = [],
+  } = {
+    ...insight_details_select_info.data,
+  };
+  cardList.value[0].options = market_place_id;
+  cardList.value[1].options = cate_name;
+  cardList.value[2].options = review_tags;
+  cardList.value[4].options = label_emotion_type;
+  cardList.value[5].options = review_channel;
+  cardList.value[6].options = parent_asin;
+});
+
+// 评论标签
+const get_all_first_label = async (v, a) => {
+  const all_first_label = await http.get('/system/all_first_label', {
+    market_place_id: JSON.stringify(v[0].value),
+    review_tags: v[2].value,
+    cate_hierarchy_data: JSON.stringify(a),
+    emotion_type: v[4].value,
+    review_channel: v[5].value,
+    parent_asin: JSON.stringify(v[6].value),
+    interval_date: v[7].value,
+    user_id: '1555073968740999936',
+    min_data: '',
+    max_data: ''
+  }, { loading: false });
+  console.log(all_first_label.data)
+}
+
+const handle = async (v, a) => {
+  await get_all_first_label(v, a);
+}
 </script>
 
 <template>
   <div class="page_wrapper">
     <div class="detailBtns">
-      <span
-        v-for="(btn, index) in btns"
-        :key="index"
-        :class="{ active: index === activeBtn }"
-        @click="activeBtn = index"
-        >{{ btn }}</span
-      >
+      <span v-for="(btn, index) in btns" :key="index" :class="{ active: index === activeBtn }"
+        @click="activeBtn = index">{{ btn }}</span>
     </div>
     <div v-show="activeBtn === 0" class="consumerSay flex-(col 1) gap16">
-      <query-card :card-list="cardList" />
+      <query-card :card-list="cardList" @handle="handle" />
       <div class="comment h300 fc gap16">
         <comment-tag />
         <div class="commentList h-full flex-1">
           <comment-list />
         </div>
       </div>
-      <Comment
-        class="comment-card flex-1"
-        :comment_data="comment_data"
-        @tabClick="comment_tabClick"
-      />
+      <Comment class="comment-card flex-1" :comment_data="comment_data" @tabClick="comment_tabClick" />
     </div>
     <div v-show="activeBtn === 1" class="tagManage flex-(col 1)">
       <p class="mb20 text-little">

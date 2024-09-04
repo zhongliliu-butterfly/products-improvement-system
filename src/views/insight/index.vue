@@ -329,7 +329,7 @@ const get_insights_reviews_list = async (v, a) => {
       emotion_type: v[4].value,
       review_channel: v[5].value,
       parent_asin: JSON.stringify(v[6].value),
-      interval_date: v[6].value,
+      interval_date: v[7].value,
     }
   );
   comment_data.value = insights_reviews_list.data;
@@ -419,47 +419,26 @@ const comparisonTabs = ref([
 <template>
   <div class="page_wrapper">
     <div class="detailBtns">
-      <span
-        v-for="(btn, index) in btns"
-        :key="index"
-        :class="{ active: index === activeBtn }"
-        @click="activeBtn = index"
-        >{{ btn }}</span
-      >
+      <span v-for="(btn, index) in btns" :key="index" :class="{ active: index === activeBtn }"
+        @click="activeBtn = index">{{ btn }}</span>
     </div>
-    <query-card
-      :card-list="activeBtn === 0 ? statList : detailList"
-      @handle="handle"
-    />
+    <query-card :card-list="activeBtn === 0 ? statList : detailList" @handle="handle" />
     <div v-show="activeBtn === 0" class="content f-col-16">
       <div class="tabs_wrap">
         <div class="tabs">
-          <span
-            v-for="(item, index) in tabs"
-            :key="index"
-            :class="{ active: index === activeTab }"
-            @click="handletab(index)"
-            >{{ item }}</span
-          >
+          <span v-for="(item, index) in tabs" :key="index" :class="{ active: index === activeTab }"
+            @click="handletab(index)">{{ item }}</span>
         </div>
       </div>
       <!-- 反馈分析 -->
       <div v-if="activeTab === 0" class="f-col-16">
         <div class="feedback h280 fc gap20">
-          <EvaluateLineChart
-            v-for="(item, index) in evaluateLineChart_data"
-            :key="index"
-            class="flex-1"
-            :data="item"
-          />
+          <EvaluateLineChart v-for="(item, index) in evaluateLineChart_data" :key="index" class="flex-1" :data="item" />
         </div>
         <el-row class="card flex-1">
           <el-col>
-            <EvaluateAnalyse
-              :evaluatePieBarChart0="evaluatePieBarChart_data[0]"
-              :evaluatePieBarChart1="evaluatePieBarChart_data[1]"
-              :evaluatePieBarChart2="evaluatePieBarChart_data[2]"
-            />
+            <EvaluateAnalyse :evaluatePieBarChart0="evaluatePieBarChart_data[0]"
+              :evaluatePieBarChart1="evaluatePieBarChart_data[1]" :evaluatePieBarChart2="evaluatePieBarChart_data[2]" />
           </el-col>
         </el-row>
       </div>
@@ -469,12 +448,8 @@ const comparisonTabs = ref([
         <comparison-table class="flex-1" />
       </div> -->
     </div>
-    <Comment
-      v-show="activeBtn === 1"
-      class="comment-card flex-1"
-      :comment_data="comment_data"
-      @tabClick="comment_tabClick"
-    />
+    <Comment v-show="activeBtn === 1" class="comment-card flex-1" :comment_data="comment_data"
+      @tabClick="comment_tabClick" />
   </div>
 </template>
 
@@ -482,6 +457,7 @@ const comparisonTabs = ref([
 .f-col-16 {
   @apply flex-(col 1) gap16;
 }
+
 .comment-card {
   :deep(.el-tabs__content) {
     max-height: calc(100vh - 400px);
