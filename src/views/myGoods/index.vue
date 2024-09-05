@@ -224,11 +224,10 @@ const get_product_table = async (v, a, flag = 1) => {
 
 const handleactiveName = async (index: number) => {
   activeTab.value = index;
-  await get_product_table(cardList.value, [], index + 1);
+  get_product_table(cardList.value, [], index + 1);
 };
 
-onBeforeMount(async () => {
-  console.log("init query");
+const get_product_select_info = async () => {
   const prodcut_select_info_res = await http.get(
     `/system/product_select_info`,
     {
@@ -249,7 +248,12 @@ onBeforeMount(async () => {
   cardList.value[1].options = cate_name;
   cardList.value[2].options = parent_asin;
   cardList.value[4].options = review_channel;
-  await get_product_table(cardList.value, [], activeTab.value + 1);
+}
+
+onBeforeMount(async () => {
+  console.log("init query");
+  get_product_select_info()
+  get_product_table(cardList.value, [], activeTab.value + 1);
 });
 
 const handle = async (v, a) => {
@@ -259,7 +263,7 @@ const handle = async (v, a) => {
   console.log(`评分范围：${v[3].value}`);
   console.log(`评价渠道：${v[4].value}`);
   console.log(`时间：${v[5].value}`);
-  await get_product_table(v, a);
+  get_product_table(v, a);
 };
 </script>
 

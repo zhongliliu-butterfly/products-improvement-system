@@ -152,19 +152,21 @@ provide(
   handle_tab_evaluatePieBarChart_select
 );
 
-onBeforeMount(async () => {
+const get_insight_statistics_select_info = async () => {
   const insight_statistics_select_info = await http.get(
     `/system/insight_statistics_select_info`,
-    { loading: false }
+    { loading: true }
   );
   statList.value[0].options = insight_statistics_select_info.data;
+}
 
+const get_insight_details_select_info = async () => {
   const insight_details_select_info = await http.get(
     `/system/insight_details_select_info`,
     {
       user_id: "1555073968740999936",
     },
-    { loading: false }
+    { loading: true }
   );
   const {
     market_place_id = [],
@@ -182,12 +184,17 @@ onBeforeMount(async () => {
   detailList.value[4].options = label_emotion_type;
   detailList.value[5].options = review_channel;
   detailList.value[6].options = parent_asin;
-  await get_customer_feedback_analysis(statList.value, []);
+}
+
+onBeforeMount(async () => {
+  get_insight_statistics_select_info()
+  get_insight_details_select_info()
+  get_customer_feedback_analysis(statList.value, []);
+  get_insights_reviews_list(detailList.value, []);
   evaluatePieBarChart_data.value = await get_original_sound_insights(
     statList.value,
     []
   );
-  await get_insights_reviews_list(detailList.value, []);
 });
 
 const get_original_sound_insights = async (v, a) => {

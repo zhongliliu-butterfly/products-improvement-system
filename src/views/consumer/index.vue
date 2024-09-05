@@ -3,6 +3,7 @@ import http from "@/api";
 import commentTag from "./components/commentTag.vue";
 import commentList from "./components/commentList.vue";
 import TagMange from "./components/tagMamage.vue";
+import { c } from "vite/dist/node/types.d-aGj9QkWt";
 
 const btns = ref(["消费者说", "标签管理"]);
 const activeBtn = ref(0);
@@ -84,21 +85,37 @@ const cardList = ref<QueryCard[]>([
   },
 ]);
 const comment_data = ref([]);
+const cate_hierarchy_data = ref([]);
 const comment_tabClick_value = ref("all");
-const comment_tabClick = async (v) => {
-  comment_tabClick_value.value = v;
-  // await get_insights_reviews_list(cardList.value, []);
-};
 const comment_label = ref({
   xAxisdata: [],
   negdata: [],
   posdata: []
 });
 const comment_list = ref({
-  wordList: [],
-  hotWord: [],
-  commentList: []
+  word_counts: [],
+  translate_word_counts: [],
+  page_words: [],
+  total: 0
 });
+const comment_list_pageable = reactive({
+  pageNum: 1,
+  pageSize: 10,
+  total: 0
+});
+
+const comment_tabClick = async (v) => {
+  comment_tabClick_value.value = v;
+  await render_commentList(cardList.value, cate_hierarchy_data.value);
+};
+const commentListSizeChange = async (val) => {
+  comment_list_pageable.pageSize = val;
+  await render_commentList(cardList.value, cate_hierarchy_data.value);
+};
+const commentListCurrentChange = async (val) => {
+  comment_list_pageable.pageNum = val;
+  await render_commentList(cardList.value, cate_hierarchy_data.value);
+};
 
 onBeforeMount(async () => {
   const insight_details_select_info = await http.get(
@@ -140,30 +157,38 @@ const get_all_first_label = async (v, a, return_flag) => {
     max_data: '',
     return_flag: return_flag,
     flag: comment_tabClick_value.value == "all" ? 1 : 2,
-  }, { loading: false });
+    pageNumber: comment_list_pageable.pageNum,
+    pageSize: comment_list_pageable.pageSize
+  }, { loading: true });
 }
-const get_commentLabel = async (v, a) => {
+const render_commentLabel = async (v, a) => {
   const commentLabel = await get_all_first_label(v, a, 1);
   const xAxisdata = [], negdata = [], posdata = []
   commentLabel?.data.forEach(element => {
     xAxisdata.push(element.label_name);
-    negdata.push(element.neg_count);
-    posdata.push(element.pos_count);
+    negdata.push(element.neg_num);
+    posdata.push(element.pos_num);
   });
+  comment_label.value = {
+    xAxisdata,
+    negdata,
+    posdata
+  };
 }
-const get_commentData = async (v, a) => {
+const render_commentData = async (v, a) => {
   const commentData = await get_all_first_label(v, a, 2);
   comment_data.value = commentData.data;
 }
-const get_commentList = async (v, a) => {
+const render_commentList = async (v, a) => {
   const commentList = await get_all_first_label(v, a, 3);
   comment_list.value = commentList.data;
 }
 
 const handle = async (v, a) => {
-  get_commentLabel(v, a);
-  get_commentData(v, a);
-  get_commentList(v, a);
+  cate_hierarchy_data.value = a;
+  render_commentLabel(v, a);
+  render_commentData(v, a);
+  render_commentList(v, a);
 }
 </script>
 
@@ -179,8 +204,9 @@ const handle = async (v, a) => {
         <comment-tag :xAxisdata="comment_label.xAxisdata" :negdata="comment_label.negdata"
           :posdata="comment_label.posdata" />
         <div class="commentList h-full flex-1">
-          <comment-list :wordList="comment_list?.wordList" :hotWord="comment_list?.hotWord"
-            :commentList="comment_list?.commentList" />
+          <comment-list :wordList="comment_list?.word_counts" :translate_wordList="comment_list?.translate_word_counts"
+            :commentList="comment_list?.page_words" :total="comment_list.total"
+            @handleSizeChange="commentListSizeChange" @handleCurrentChange="commentListCurrentChange" />
         </div>
       </div>
       <Comment class="comment-card flex-1" :comment_data="comment_data" @tabClick="comment_tabClick" />

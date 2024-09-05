@@ -85,7 +85,7 @@ onBeforeMount(async () => {
   cardList.value[0].options = cate_name;
   cardList.value[1].options = brand_name;
   cardList.value[2].options = shop_name;
-  await get_industry_analysis_ring_ratio(cardList.value, [])
+  get_industry_analysis_ring_ratio(cardList.value, [])
   evaluatePieBarChart_data.value = await get_industry_feedback_analysis(cardList.value, [])
 });
 

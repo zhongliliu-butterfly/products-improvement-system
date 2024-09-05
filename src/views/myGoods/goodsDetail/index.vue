@@ -104,27 +104,35 @@ const get_product_detail = async (parent_asin, market_place_id) => {
   goodInfo.value = one_product.data;
 };
 
-onBeforeMount(async () => {
+const get_detail_select_info = async () => {
   const { data } = await http.get(
     `/system/detail_select_info`,
     {
       user_id: "1555073968740999936",
     },
-    { loading: false }
+    { loading: true }
   );
   const { marketplaces_data, data_source } = { ...data };
   cardList.value[0].options = marketplaces_data;
   cardList.value[1].options = data_source;
-  // 尺码颜色
+};
+
+onBeforeMount(async () => {
+  get_detail_select_info()
+  get_color_size_label(cardList.value)
+  get_product_detail(parent_asin, [market_place_id]);
+  get_focus_follow(cardList.value);
+});
+
+// 尺码颜色
+const get_color_size_label = async (v) => {
   const color_size_label = await http.get(`/system/color_size_label`, {
     parent_asin: parent_asin,
-    market_place_id: JSON.stringify(cardList.value[0].value),
+    market_place_id: JSON.stringify(v[0].value),
   });
   feedback_color.value = color_size_label.data.color;
   feedback_size.value = color_size_label.data.size;
-  await get_product_detail(parent_asin, [market_place_id]);
-  await get_focus_follow(cardList.value);
-});
+};
 
 // 关注
 const follow = async () => {

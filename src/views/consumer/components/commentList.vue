@@ -7,8 +7,9 @@ const activeTab = ref(0)
 const switchVal = ref(false)
 const props = defineProps<{
   wordList: [],
-  hotWord: [],
-  commentList: []
+  translate_wordList: []
+  commentList: [],
+  total: 0
 }>();
 const options = ref<ECOption>({
   series: [{
@@ -44,7 +45,7 @@ const options = ref<ECOption>({
     },
     height: '90%',
     width: '80%',
-    data: words,
+    data: !switchVal.value ? props.wordList : props.translate_wordList,
   }],
 })
 const list = ref([
@@ -57,27 +58,72 @@ const list = ref([
   { name: '母婴' },
   { name: '男鞋' },
 ])
-const tableData = Array.from({ length: 100 }, (_, index) => ({
-  word: '好用好用好用好用好用好用好用好用好用好用好用好用好用好用',
-  count: 100,
-  id: index,
-}))
+
 const handleSelectionChange = (val) => {
   console.log('val', val)
 }
 const pageable = reactive({
   pageNum: 1,
   pageSize: 10,
-  total: 100,
+  total: props.total,
 })
-
+const emits = defineEmits(["handleSizeChange", "handleCurrentChange"]);
 const handleSizeChange = (size: number) => {
+  emits("handleSizeChange", size);
   console.log('size', size)
+  pageable.pageSize = size
 }
 const handleCurrentChange = (curPage: number) => {
+  emits("handleCurrentChange", curPage);
   console.log('curPage', curPage)
   pageable.pageNum = curPage
 }
+
+watch(
+  () => [props, switchVal],
+  () => {
+    options.value = {
+      series: [{
+        name: 'wordCloud',
+        // @ts-expect-error
+        type: 'wordCloud',
+        size: ['0%', '99%'],
+        sizeRange: [8, 30],
+        textRotation: [0, 45, 90, -45],
+        rotationRange: [-45, 90],
+        textPadding: 5,
+        left: 10,
+        right: 0,
+        top: 'center',
+        bottom: 0,
+        autoSize: {
+          enable: true,
+          minSize: 6,
+        },
+        gridSize: 10,
+        textStyle: {
+          color() {
+            return `rgb(${[
+              Math.round(Math.random() * 160),
+              Math.round(Math.random() * 160),
+              Math.round(Math.random() * 160),
+            ].join(',')})`
+          },
+          emphasis: {
+            shadowBlur: 10,
+            shadowColor: '#333',
+          },
+        },
+        height: '90%',
+        width: '80%',
+        data: !switchVal.value ? props.wordList : props.translate_wordList,
+      }],
+    }
+    pageable.total = props.total
+  }, {
+  deep: true
+}
+)
 </script>
 
 <template>
@@ -95,26 +141,26 @@ const handleCurrentChange = (curPage: number) => {
         <el-button v-show="activeTab === 1" type="primary" size="small" plain>
           批量添加至指标
         </el-button>
-        <span class="fc gap20">
+        <span class="fc gap20" v-if="activeTab == 0">
           <el-switch v-model="switchVal" active-text="翻译" />
         </span>
       </div>
     </div>
     <div v-show="activeTab === 0" class="content relative flex flex-1">
       <ECharts :option="options" />
-      <ul class="scroll-none absolute right-0 max-h-full flex-col gap8 o-auto">
+      <!-- <ul class="scroll-none absolute right-0 max-h-full flex-col gap8 o-auto">
         <li v-for="(item, index) in list" :key="item.name" class="fc gap10">
           <span class="list-item">{{ index + 1 }}</span>
           {{ item.name }}
         </li>
-      </ul>
+      </ul> -->
     </div>
     <div v-show="activeTab === 1" class="list">
-      <el-table size="small" :data="tableData" style="width: 100%" height="200" row-key="id"
+      <el-table size="small" :data="commentList" style="width: 100%" height="200" row-key="value"
         @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" />
-        <el-table-column label="评论词语" prop="word" />
-        <el-table-column label="频次" prop="count" width="150" />
+        <el-table-column label="评论词语" prop="name" />
+        <el-table-column label="频次" prop="value" width="150" />
         <el-table-column label="操作" width="150">
           <a class="mr10 text-primary-b">
             添加标签
