@@ -68,7 +68,7 @@ const activeOperation = ref(0);
 const evaluatePieBarChart_data = ref([]);
 
 const handle_tab_activeName = async (val: any) => {
-  console.log(val)
+  console.log(val);
   tab_activeName.value = val.props.name;
   evaluatePieBarChart_data.value = await get_reviews_analysis(
     tab_activeName.value === "negative" ? 0 : 1,
@@ -78,18 +78,26 @@ const handle_tab_activeName = async (val: any) => {
 provide("handle_tab_activeName", handle_tab_activeName);
 
 const handle_tab_evaluatePieBarChart_select = async (val: any) => {
-  console.log(val, 1111111111111111111111111111111111111111111111111111111111)
-  const data = await get_detail_parent_label(cardList.value, tab_activeName.value == "negative" ? 'neg' : 'pos', Number(val.currentIndex) + 1, val.selected_value)
-  data[0].lable_options = val.lable_options
-  data[0].selected_value = val.selected_value
+  console.log(val, 1111111111111111111111111111111111111111111111111111111111);
+  const data = await get_detail_parent_label(
+    cardList.value,
+    tab_activeName.value == "negative" ? "neg" : "pos",
+    Number(val.currentIndex) + 1,
+    val.selected_value
+  );
+  data[0].lable_options = val.lable_options;
+  data[0].selected_value = val.selected_value;
   if (val.currentIndex == 1) {
-    evaluatePieBarChart_data.value[1] = data[0]
-    evaluatePieBarChart_data.value[2] = data[1]
+    evaluatePieBarChart_data.value[1] = data[0];
+    evaluatePieBarChart_data.value[2] = data[1];
   } else {
-    evaluatePieBarChart_data.value[2] = data[0]
-  };
-}
-provide("handle_tab_evaluatePieBarChart_select", handle_tab_evaluatePieBarChart_select);
+    evaluatePieBarChart_data.value[2] = data[0];
+  }
+};
+provide(
+  "handle_tab_evaluatePieBarChart_select",
+  handle_tab_evaluatePieBarChart_select
+);
 
 // 产品详情
 const get_product_detail = async (parent_asin, market_place_id) => {
@@ -118,8 +126,8 @@ const get_detail_select_info = async () => {
 };
 
 onBeforeMount(async () => {
-  get_detail_select_info()
-  get_color_size_label(cardList.value)
+  get_detail_select_info();
+  get_color_size_label(cardList.value);
   get_product_detail(parent_asin, [market_place_id]);
   get_focus_follow(cardList.value);
 });
@@ -206,9 +214,10 @@ const handle = async (v) => {
   if (activeOperation.value == 0) {
     await get_focus_follow(v);
   } else if (activeOperation.value == 1) {
+    get_color_size_label(cardList.value);
     evaluatePieBarChart_data.value = await get_reviews_analysis(0, parent_asin);
   } else {
-    await get_comparative_analysis_select_info()
+    await get_comparative_analysis_select_info();
 
     // const d1 = await get_reviews_analysis(2, parent_asin);
     // const d2 = await get_reviews_analysis(2, parent_asin);
@@ -225,13 +234,13 @@ const get_reviews_analysis = async (flag, parent_asin) => {
     min_data: "",
     max_data: "",
     color: JSON.stringify(active_color.value),
-    size: JSON.stringify(active_size.value)
+    size: JSON.stringify(active_size.value),
   });
   const list = [];
-  if (!reviews_analysis.data) return []
+  if (!reviews_analysis.data) return [];
   for (var i in reviews_analysis.data["tags"]) {
     const option_data = [],
-      option_yAxis_data = []
+      option_yAxis_data = [];
     reviews_analysis.data["tags"][i][0]?.forEach((element: any) => {
       option_yAxis_data.push(`${element.label_ratio}%`);
       option_data.push({
@@ -244,7 +253,7 @@ const get_reviews_analysis = async (flag, parent_asin) => {
       lable_options: reviews_analysis.data["tags"][i][1],
       option_yAxis_data: option_yAxis_data,
       option_data: option_data,
-      selected_value: reviews_analysis.data["tags"][i][1][0]?.value
+      selected_value: reviews_analysis.data["tags"][i][1][0]?.value,
     };
     list.push(list_data);
   }
@@ -252,7 +261,12 @@ const get_reviews_analysis = async (flag, parent_asin) => {
 };
 
 // 客户反馈分析差评/好评分析的根据上一级标签id以及查询条件查找当前级的标签
-const get_detail_parent_label = async (v, label_emotion_type, current_level, label_id) => {
+const get_detail_parent_label = async (
+  v,
+  label_emotion_type,
+  current_level,
+  label_id
+) => {
   const detail_parent_label = await http.get(
     `/system/detail_parent_label`,
     {
@@ -265,15 +279,15 @@ const get_detail_parent_label = async (v, label_emotion_type, current_level, lab
       min_data: "",
       max_data: "",
       color: JSON.stringify(active_color.value),
-      size: JSON.stringify(active_size.value)
+      size: JSON.stringify(active_size.value),
     },
     { loading: false }
   );
   const list = [];
-  if (!detail_parent_label.data) return []
+  if (!detail_parent_label.data) return [];
   for (var i in detail_parent_label.data["tags"]) {
     const option_data = [],
-      option_yAxis_data = []
+      option_yAxis_data = [];
     detail_parent_label.data["tags"][i][0]?.forEach((element: any) => {
       option_yAxis_data.push(`${element.label_ratio}%`);
       option_data.push({
@@ -286,7 +300,7 @@ const get_detail_parent_label = async (v, label_emotion_type, current_level, lab
       lable_options: detail_parent_label.data["tags"][i][1],
       option_yAxis_data: option_yAxis_data,
       option_data: option_data,
-      selected_value: detail_parent_label.data["tags"][i][1][0]?.value
+      selected_value: detail_parent_label.data["tags"][i][1][0]?.value,
     };
     list.push(list_data);
   }
@@ -306,7 +320,7 @@ const get_comparative_analysis_select_info = async () => {
   comparison_options1.value =
     comparative_analysis_select_info.data.market_place;
   comparison_options2.value = comparative_analysis_select_info.data.result;
-}
+};
 
 const question_card_change1 = (v) => {
   question_card_change_value1.value = v;
@@ -336,7 +350,6 @@ const handle_tab = async (index: number) => {
   activeOperation.value = index;
   await handle(cardList.value);
 };
-
 </script>
 
 <template>
@@ -352,7 +365,12 @@ const handle_tab = async (index: number) => {
           <span class="font-600">{{ goodInfo.title }}</span>
           <span text="little">{{ goodInfo.review_channel }}</span>
           <div class="rate fc gap20">
-            <el-rate :model-value="goodInfo.review_score" disabled show-score score-template="{value}.0" />
+            <el-rate
+              :model-value="goodInfo.review_score"
+              disabled
+              show-score
+              score-template="{value}.0"
+            />
             <i text="secondary">{{ goodInfo.evaluate_num }}条评价</i>
             <i text="secondary">{{ goodInfo.review_count }}条退货评价</i>
           </div>
@@ -369,8 +387,13 @@ const handle_tab = async (index: number) => {
     <div class="analysis flex-(col 1) gap16">
       <div class="tabs_wrap">
         <div class="tabs">
-          <span v-for="(tab, index) in tabs" :key="index" :class="{ active: activeOperation === index }"
-            @click="handle_tab(index)">{{ tab }}</span>
+          <span
+            v-for="(tab, index) in tabs"
+            :key="index"
+            :class="{ active: activeOperation === index }"
+            @click="handle_tab(index)"
+            >{{ tab }}</span
+          >
         </div>
         <div class="right fc gap12">
           <el-radio-group v-model="dateValue">
@@ -380,58 +403,106 @@ const handle_tab = async (index: number) => {
             <el-radio-button label="近一年" value="3" />
             <el-radio-button label="上架至今" value="4" />
           </el-radio-group>
-          <el-date-picker v-model="timeValue" type="daterange" range-separator="-" start-placeholder="Start date"
-            end-placeholder="End date" format="YYYY-MM-DD" value-format="YYYY-MM-DD" />
+          <el-date-picker
+            v-model="timeValue"
+            type="daterange"
+            range-separator="-"
+            start-placeholder="Start date"
+            end-placeholder="End date"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD"
+          />
         </div>
       </div>
       <div class="content flex flex-(1) gap16">
         <template v-if="activeOperation === 0">
-          <question-card @question_card_change="question_card_change1" :title="questioncard_data.title[0]" :number="question_card_change_value1 === 'color'
-            ? questioncard_data.color_num[0]
-            : questioncard_data.size_num[0]
-            " :rate="question_card_change_value1 === 'color'
-              ? questioncard_data.color_rate[0]
-              : questioncard_data.size_rate[0]
-              " :xAxis="question_card_change_value1 === 'color'
+          <question-card
+            @question_card_change="question_card_change1"
+            :title="questioncard_data.title[0]"
+            :number="
+              question_card_change_value1 === 'color'
+                ? questioncard_data.color_num[0]
+                : questioncard_data.size_num[0]
+            "
+            :rate="
+              question_card_change_value1 === 'color'
+                ? questioncard_data.color_rate[0]
+                : questioncard_data.size_rate[0]
+            "
+            :xAxis="
+              question_card_change_value1 === 'color'
                 ? questioncard_data.color_xAxis[0]
                 : questioncard_data.size_xAxis[0]
-                " :yAxis="question_card_change_value1 === 'color'
-                  ? questioncard_data.color_yAxis[0]
-                  : questioncard_data.size_yAxis[0]
-                  " />
-          <question-card @question_card_change="question_card_change2" :title="questioncard_data.title[1]" :number="question_card_change_value2 === 'color'
-            ? questioncard_data.color_num[1]
-            : questioncard_data.size_num[1]
-            " :rate="question_card_change_value2 === 'color'
-              ? questioncard_data.color_rate[1]
-              : questioncard_data.size_rate[1]
-              " :xAxis="question_card_change_value2 === 'color'
+            "
+            :yAxis="
+              question_card_change_value1 === 'color'
+                ? questioncard_data.color_yAxis[0]
+                : questioncard_data.size_yAxis[0]
+            "
+          />
+          <question-card
+            @question_card_change="question_card_change2"
+            :title="questioncard_data.title[1]"
+            :number="
+              question_card_change_value2 === 'color'
+                ? questioncard_data.color_num[1]
+                : questioncard_data.size_num[1]
+            "
+            :rate="
+              question_card_change_value2 === 'color'
+                ? questioncard_data.color_rate[1]
+                : questioncard_data.size_rate[1]
+            "
+            :xAxis="
+              question_card_change_value2 === 'color'
                 ? questioncard_data.color_xAxis[1]
                 : questioncard_data.size_xAxis[1]
-                " :yAxis="question_card_change_value2 === 'color'
-                  ? questioncard_data.color_yAxis[1]
-                  : questioncard_data.size_yAxis[1]
-                  " />
-          <question-card @question_card_change="question_card_change3" :title="questioncard_data.title[2]" :number="question_card_change_value3 === 'color'
-            ? questioncard_data.color_num[2]
-            : questioncard_data.size_num[2]
-            " :rate="question_card_change_value3 === 'color'
-              ? questioncard_data.color_rate[2]
-              : questioncard_data.size_rate[2]
-              " :xAxis="question_card_change_value3 === 'color'
+            "
+            :yAxis="
+              question_card_change_value2 === 'color'
+                ? questioncard_data.color_yAxis[1]
+                : questioncard_data.size_yAxis[1]
+            "
+          />
+          <question-card
+            @question_card_change="question_card_change3"
+            :title="questioncard_data.title[2]"
+            :number="
+              question_card_change_value3 === 'color'
+                ? questioncard_data.color_num[2]
+                : questioncard_data.size_num[2]
+            "
+            :rate="
+              question_card_change_value3 === 'color'
+                ? questioncard_data.color_rate[2]
+                : questioncard_data.size_rate[2]
+            "
+            :xAxis="
+              question_card_change_value3 === 'color'
                 ? questioncard_data.color_xAxis[2]
                 : questioncard_data.size_xAxis[2]
-                " :yAxis="question_card_change_value3 === 'color'
-                  ? questioncard_data.color_yAxis[2]
-                  : questioncard_data.size_yAxis[2]
-                  " />
+            "
+            :yAxis="
+              question_card_change_value3 === 'color'
+                ? questioncard_data.color_yAxis[2]
+                : questioncard_data.size_yAxis[2]
+            "
+          />
         </template>
         <template v-if="activeOperation === 1">
-          <FeedBack :color="feedback_color" :size="feedback_size" :evaluatePieBarChart_data="evaluatePieBarChart_data"
-            @active_color_change="active_color_change" @active_size_change="active_size_change" />
+          <FeedBack
+            :color="feedback_color"
+            :size="feedback_size"
+            :evaluatePieBarChart_data="evaluatePieBarChart_data"
+            @active_color_change="active_color_change"
+            @active_size_change="active_size_change"
+          />
         </template>
         <template v-if="activeOperation === 2">
-          <Comparison :options1="comparison_options1" :options2="comparison_options2" />
+          <Comparison
+            :options1="comparison_options1"
+            :options2="comparison_options2"
+          />
         </template>
       </div>
     </div>
