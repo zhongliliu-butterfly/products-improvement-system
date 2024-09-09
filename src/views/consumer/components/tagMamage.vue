@@ -10,6 +10,7 @@ import http from "@/api";
 onMounted(() => {
   getTreeFilter()
   getSysTreeFilter()
+  getCustomLabel()
 })
 
 const proTable = ref<ProTableInstance>()
@@ -21,7 +22,8 @@ const sysinitParam = reactive({ departmentId: '' })
 // 获取 treeFilter 数据
 // 当 proTable 的 requestAuto 属性为 false，不会自动请求表格数据，等待 treeFilter 数据回来之后，更改 initParam.departmentId 的值，才会触发请求 proTable 数据
 const treeFilterData = ref<any>([])
-const sys_treeFilterData = ref<any>([])
+const sysTreeFilterData = ref<any>([])
+const sysCustomLabel = ref<any>([])
 
 const getTreeFilter = async () => {
   const { data } = await http.get(
@@ -43,9 +45,23 @@ const getSysTreeFilter = async () => {
       },
       { loading: false }
   )
-  sys_treeFilterData.value = data
-  sysinitParam.departmentId = sys_treeFilterData.value[1].value
+  sysTreeFilterData.value = data
+  sysinitParam.departmentId = sysTreeFilterData.value[1].value
 }
+
+const getCustomLabel = async () =>{
+  const { data } = await http.get(
+      `/system/custom_label`,
+      {
+        user_id: "1555073968740999936",
+        pageSize:pageable.pageSize,
+        pageNum:pageable.currentPage
+      },
+      { loading: false }
+  )
+  sysCustomLabel.value = data
+}
+
 
 // 树形筛选切换
 const changeTreeFilter = (val: string) => {
@@ -57,28 +73,39 @@ const changeTreeFilter = (val: string) => {
 const loading = ref(false)
 const filterGenderEnum = ref<typeof genderType>([])
 
+const handleSizeChange=(v)=>{
+  pageable.currentPage=1
+  pageable.pageSize=v
+  getCustomLabel()
+}
+
+const handleCurrentChange=(v)=>{
+  pageable.currentPage=v
+  getCustomLabel()
+}
+const pageable = reactive({
+currentPage: 1,
+pageSize: 10,
+total: 100,
+handleSizeChange:handleSizeChange,
+handleCurrentChange:handleCurrentChange
+});
+
+
 
 // 表格配置项
 const columns = reactive<ColumnProps[]>([
-  { prop: 'tagName', label: '标签名称' },
+  { prop: 'label_name', label: '标签名称' },
   {
-    prop: 'type',
+    prop: 'id',
     label: '类型',
-    enum: filterGenderEnum,
-    render: scope => <>{scope.row.type}</>,
+    // enum: filterGenderEnum,
   },
-  { prop: 'sideTagName', label: '对立标签' },
-  { prop: 'createTime', label: '提交时间', width: 180 },
+  { prop: 'opposition_label_name', label: '对立标签' },
+  { prop: 'update_datetime', label: '提交时间', width: 180},
   { prop: 'operation', label: '操作', width: 300, fixed: 'right' },
 ])
 const tagVal = ref('0')
-const data = Array.from({ length: 100 }).map((_, index) => ({
-  id: index,
-  tagName: `标签${index}`,
-  sideTagName: '标注问题',
-  createTime: '2024/07/15 14:20:34',
-  type: '新增',
-}))
 </script>
 
 <template>
@@ -104,7 +131,7 @@ const data = Array.from({ length: 100 }).map((_, index) => ({
       <TreeFilter
         v-else
         label="label"
-        :data="sys_treeFilterData"
+        :data="sysTreeFilterData"
         :default-value="sysinitParam.departmentId"
         class="tree-card"
         @change="changeTreeFilter"
@@ -121,7 +148,8 @@ const data = Array.from({ length: 100 }).map((_, index) => ({
         :request-auto="false"
         :init-param="initParam"
         :tool-button="false"
-        :data
+        :data="sysCustomLabel"
+        :paginationOptions="pageable"
       >
         <!-- 表格 header 按钮 -->
         <template #tableHeader>
@@ -153,6 +181,9 @@ const data = Array.from({ length: 100 }).map((_, index) => ({
   }
   .tree-wrapper {
     .tabs {
+      :deep(.el-radio-button__inner) {
+        transition: none;
+      }
       > span {
         @apply text-#999 cur-p;
         &.active {

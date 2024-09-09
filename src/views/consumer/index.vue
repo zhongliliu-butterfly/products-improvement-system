@@ -90,18 +90,18 @@ const comment_tabClick_value = ref("all");
 const comment_label = ref({
   xAxisdata: [],
   negdata: [],
-  posdata: []
+  posdata: [],
 });
 const comment_list = ref({
   word_counts: [],
   translate_word_counts: [],
   page_words: [],
-  total: 0
+  total: 0,
 });
 const comment_list_pageable = reactive({
   pageNum: 1,
   pageSize: 10,
-  total: 0
+  total: 0,
 });
 
 const comment_tabClick = async (v) => {
@@ -110,6 +110,7 @@ const comment_tabClick = async (v) => {
 };
 const commentListSizeChange = async (val) => {
   comment_list_pageable.pageSize = val;
+  comment_list_pageable.pageNum = 1;
   await render_commentList(cardList.value, cate_hierarchy_data.value);
 };
 const commentListCurrentChange = async (val) => {
@@ -144,27 +145,33 @@ onBeforeMount(async () => {
 });
 
 const get_all_first_label = async (v, a, return_flag) => {
-  return await http.get('/system/all_first_label', {
-    market_place_id: JSON.stringify(v[0].value),
-    review_tags: v[2].value,
-    cate_hierarchy_data: JSON.stringify(a),
-    emotion_type: v[4].value,
-    review_channel: v[5].value,
-    parent_asin: JSON.stringify(v[6].value),
-    interval_date: v[7].value,
-    user_id: '1555073968740999936',
-    min_data: '',
-    max_data: '',
-    return_flag: return_flag,
-    flag: comment_tabClick_value.value == "all" ? 1 : 2,
-    pageNumber: comment_list_pageable.pageNum,
-    pageSize: comment_list_pageable.pageSize
-  }, { loading: true });
-}
+  return await http.get(
+    "/system/all_first_label",
+    {
+      market_place_id: JSON.stringify(v[0].value),
+      review_tags: v[2].value,
+      cate_hierarchy_data: JSON.stringify(a),
+      emotion_type: v[4].value,
+      review_channel: v[5].value,
+      parent_asin: JSON.stringify(v[6].value),
+      interval_date: v[7].value,
+      user_id: "1555073968740999936",
+      min_data: "",
+      max_data: "",
+      return_flag: return_flag,
+      flag: comment_tabClick_value.value == "all" ? 1 : 2,
+      pageNumber: comment_list_pageable.pageNum,
+      pageSize: comment_list_pageable.pageSize,
+    },
+    { loading: true }
+  );
+};
 const render_commentLabel = async (v, a) => {
   const commentLabel = await get_all_first_label(v, a, 1);
-  const xAxisdata = [], negdata = [], posdata = []
-  commentLabel?.data.forEach(element => {
+  const xAxisdata = [],
+    negdata = [],
+    posdata = [];
+  commentLabel?.data.forEach((element) => {
     xAxisdata.push(element.label_name);
     negdata.push(element.neg_num);
     posdata.push(element.pos_num);
@@ -172,44 +179,61 @@ const render_commentLabel = async (v, a) => {
   comment_label.value = {
     xAxisdata,
     negdata,
-    posdata
+    posdata,
   };
-}
+};
 const render_commentData = async (v, a) => {
   const commentData = await get_all_first_label(v, a, 2);
   comment_data.value = commentData.data;
-}
+};
 const render_commentList = async (v, a) => {
   const commentList = await get_all_first_label(v, a, 3);
   comment_list.value = commentList.data;
-}
+};
 
 const handle = async (v, a) => {
   cate_hierarchy_data.value = a;
   render_commentLabel(v, a);
   render_commentData(v, a);
   render_commentList(v, a);
-}
+};
 </script>
 
 <template>
   <div class="page_wrapper">
     <div class="detailBtns">
-      <span v-for="(btn, index) in btns" :key="index" :class="{ active: index === activeBtn }"
-        @click="activeBtn = index">{{ btn }}</span>
+      <span
+        v-for="(btn, index) in btns"
+        :key="index"
+        :class="{ active: index === activeBtn }"
+        @click="activeBtn = index"
+        >{{ btn }}</span
+      >
     </div>
     <div v-show="activeBtn === 0" class="consumerSay flex-(col 1) gap16">
       <query-card :card-list="cardList" @handle="handle" />
       <div class="comment h300 fc gap16">
-        <comment-tag :xAxisdata="comment_label.xAxisdata" :negdata="comment_label.negdata"
-          :posdata="comment_label.posdata" />
+        <comment-tag
+          :xAxisdata="comment_label.xAxisdata"
+          :negdata="comment_label.negdata"
+          :posdata="comment_label.posdata"
+        />
         <div class="commentList h-full flex-1">
-          <comment-list :wordList="comment_list?.word_counts" :translate_wordList="comment_list?.translate_word_counts"
-            :commentList="comment_list?.page_words" :total="comment_list.total"
-            @handleSizeChange="commentListSizeChange" @handleCurrentChange="commentListCurrentChange" />
+          <comment-list
+            :wordList="comment_list?.word_counts"
+            :translate_wordList="comment_list?.translate_word_counts"
+            :commentList="comment_list?.page_words"
+            :total="comment_list.total"
+            @handleSizeChange="commentListSizeChange"
+            @handleCurrentChange="commentListCurrentChange"
+          />
         </div>
       </div>
-      <Comment class="comment-card flex-1" :comment_data="comment_data" @tabClick="comment_tabClick" />
+      <Comment
+        class="comment-card flex-1"
+        :comment_data="comment_data"
+        @tabClick="comment_tabClick"
+      />
     </div>
     <div v-show="activeBtn === 1" class="tagManage flex-(col 1)">
       <p class="mb20 text-little">

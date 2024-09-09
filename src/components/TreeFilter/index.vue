@@ -1,4 +1,5 @@
 <script setup lang="ts" name="TreeFilter">
+import http from "@/api";
 import { nextTick, onBeforeMount, ref, watch } from "vue";
 import { ElTree } from "element-plus";
 import { Search } from "@element-plus/icons-vue";
@@ -18,6 +19,7 @@ const props = withDefaults(defineProps<TreeFilterProps>(), {
   label: "label",
   multiple: false,
 });
+const opposition_label_options = ref<any>([]);
 
 // emit
 const emit = defineEmits<{
@@ -45,7 +47,8 @@ const form = reactive({
   desc: "",
 });
 
-const add_label = (v) => {
+const add_label = async (v) => {
+  await get_opposition_label(v);
   dialogFormVisible_title.value = `新增${v.label}下的标签`;
   dialogFormVisible.value = true;
 };
@@ -89,6 +92,18 @@ watch(
   { deep: true, immediate: true }
 );
 
+const get_opposition_label = async (v) => {
+  const { data } = await http.get(
+    `/system/opposition_label`,
+    {
+      user_id: "1555073968740999936",
+      level2_industry_code: v.value,
+    },
+    { loading: false }
+  );
+  opposition_label_options.value = data;
+};
+
 const filterText = ref("");
 watch(filterText, (val) => {
   treeRef.value!.filter(val);
@@ -97,15 +112,15 @@ watch(filterText, (val) => {
 // 过滤
 const filterNode = (value: string, data: { [key: string]: any }, node: any) => {
   if (!value) return true;
-  let parentNode = node.parent;
-  let labels = [node.label];
-  let level = 1;
-  while (level < node.level) {
-    labels = [...labels, parentNode.label];
-    parentNode = parentNode.parent;
-    level++;
-  }
-  return labels.some((label) => label.includes(value));
+  // let parentNode = node.parent;
+  // let labels = [node.label];
+  // let level = 1;
+  // while (level < node.level) {
+  //   labels = [...labels, parentNode.label];
+  //   parentNode = parentNode.parent;
+  //   level++;
+  // }
+  // return labels.some((label) => label.includes(value));
 };
 
 // 切换树节点的展开或折叠状态
@@ -167,7 +182,6 @@ defineExpose({ treeData, treeAllData, treeRef });
     >
       <el-tree
         ref="treeRef"
-        default-expand-all
         :node-key="id"
         :data="multiple ? treeData : treeAllData"
         :show-checkbox="multiple"
@@ -234,7 +248,7 @@ defineExpose({ treeData, treeAllData, treeRef });
         >
           <el-select v-model="form.region" placeholder="请选择">
             <el-option
-              v-for="(option, idx) in options"
+              v-for="(option, idx) in opposition_label_options"
               :key="idx"
               :label="option.label"
               :value="option.value"
