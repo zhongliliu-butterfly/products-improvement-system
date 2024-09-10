@@ -27,11 +27,11 @@ const sysCustomLabel = ref<any>([])
 
 const getTreeFilter = async () => {
   const { data } = await http.get(
-      `/system/system_first_label`,
-      {
-        user_id: "1555073968740999936",
-      },
-      { loading: false }
+    `/system/custem_first_label`,
+    {
+      user_id: "1555073968740999936",
+    },
+    { loading: false }
   )
   treeFilterData.value = data
   initParam.departmentId = treeFilterData.value[1].value
@@ -39,27 +39,28 @@ const getTreeFilter = async () => {
 
 const getSysTreeFilter = async () => {
   const { data } = await http.get(
-      `/system/system_three_label`,
-      {
-        user_id: "1555073968740999936",
-      },
-      { loading: false }
+    `/system/system_three_label`,
+    {
+      user_id: "1555073968740999936",
+    },
+    { loading: false }
   )
   sysTreeFilterData.value = data
   sysinitParam.departmentId = sysTreeFilterData.value[1].value
 }
 
-const getCustomLabel = async () =>{
-  const { data } = await http.get(
-      `/system/custom_label`,
-      {
-        user_id: "1555073968740999936",
-        pageSize:pageable.pageSize,
-        pageNum:pageable.currentPage
-      },
-      { loading: false }
+const getCustomLabel = async () => {
+  const custom_label = await http.get(
+    `/system/custom_label`,
+    {
+      user_id: "1555073968740999936",
+      pageSize: pageable.pageSize,
+      pageNumber: pageable.currentPage
+    },
+    { loading: false }
   )
-  sysCustomLabel.value = data
+  sysCustomLabel.value = custom_label.data.labels
+  pageable.total = custom_label.data.total
 }
 
 
@@ -73,22 +74,22 @@ const changeTreeFilter = (val: string) => {
 const loading = ref(false)
 const filterGenderEnum = ref<typeof genderType>([])
 
-const handleSizeChange=(v)=>{
-  pageable.currentPage=1
-  pageable.pageSize=v
+const handleSizeChange = (v) => {
+  pageable.currentPage = 1
+  pageable.pageSize = v
   getCustomLabel()
 }
 
-const handleCurrentChange=(v)=>{
-  pageable.currentPage=v
+const handleCurrentChange = (v) => {
+  pageable.currentPage = v
   getCustomLabel()
 }
 const pageable = reactive({
-currentPage: 1,
-pageSize: 10,
-total: 100,
-handleSizeChange:handleSizeChange,
-handleCurrentChange:handleCurrentChange
+  currentPage: 1,
+  pageSize: 10,
+  total: 100,
+  handleSizeChange: handleSizeChange,
+  handleCurrentChange: handleCurrentChange
 });
 
 
@@ -102,7 +103,7 @@ const columns = reactive<ColumnProps[]>([
     // enum: filterGenderEnum,
   },
   { prop: 'opposition_label_name', label: '对立标签' },
-  { prop: 'update_datetime', label: '提交时间', width: 180},
+  { prop: 'update_datetime', label: '提交时间', width: 180 },
   { prop: 'operation', label: '操作', width: 300, fixed: 'right' },
 ])
 const tagVal = ref('0')
@@ -110,9 +111,7 @@ const tagVal = ref('0')
 
 <template>
   <div class="tagList flex gap16">
-    <div
-      class="tree-wrapper scroll-none min-w250 flex-col gap20 rounded-10 bg-white px15 py20"
-    >
+    <div class="tree-wrapper scroll-none min-w250 flex-col gap20 rounded-10 bg-white px15 py20">
       <div class="tabs h30 fcc">
         <el-radio-group v-model="tagVal">
           <el-radio-button label="自定义标签" value="0" />
@@ -120,37 +119,16 @@ const tagVal = ref('0')
         </el-radio-group>
       </div>
       <!-- <div class="content flex-1 o-auto"> -->
-      <TreeFilter
-        v-if="tagVal == '0'"
-        label="label"
-        :data="treeFilterData"
-        :default-value="initParam.departmentId"
-        class="tree-card"
-        @change="changeTreeFilter"
-      />
-      <TreeFilter
-        v-else
-        label="label"
-        :data="sysTreeFilterData"
-        :default-value="sysinitParam.departmentId"
-        class="tree-card"
-        @change="changeTreeFilter"
-      />
+      <TreeFilter v-if="tagVal == '0'" label="label" :data="treeFilterData" :default-value="initParam.departmentId"
+        class="tree-card" @change="changeTreeFilter" :showButton=true />
+      <TreeFilter v-else label="label" :data="sysTreeFilterData" :default-value="sysinitParam.departmentId"
+        class="tree-card" @change="changeTreeFilter" />
       <!-- </div> -->
     </div>
 
     <div class="table-box">
-      <ProTable
-        ref="proTable"
-        row-key="id"
-        :indent="20"
-        :columns="columns"
-        :request-auto="false"
-        :init-param="initParam"
-        :tool-button="false"
-        :data="sysCustomLabel"
-        :paginationOptions="pageable"
-      >
+      <ProTable ref="proTable" row-key="id" :indent="20" :columns="columns" :request-auto="false"
+        :init-param="initParam" :tool-button="false" :data="sysCustomLabel" :paginationOptions="pageable">
         <!-- 表格 header 按钮 -->
         <template #tableHeader>
           <div class="header w-full fbc">
@@ -176,23 +154,28 @@ const tagVal = ref('0')
 <style scoped lang="scss">
 .tagList {
   height: calc(100vh - 230px);
+
   :deep(.header-button-lf) {
     float: unset !important;
   }
+
   .tree-wrapper {
     .tabs {
       :deep(.el-radio-button__inner) {
         transition: none;
       }
-      > span {
+
+      >span {
         @apply text-#999 cur-p;
+
         &.active {
           @apply text-primary;
         }
       }
     }
+
     .tree-card {
-      @apply flex-1 o-auto  m0! h-auto! w-auto! border-none! p0! shadow-none!;
+      @apply flex-1 o-auto m0 ! h-auto ! w-auto ! border-none ! p0 ! shadow-none !;
     }
   }
 }

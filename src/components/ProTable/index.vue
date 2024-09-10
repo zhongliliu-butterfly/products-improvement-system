@@ -228,55 +228,36 @@ defineExpose({
 
 <template>
   <!-- 查询表单 -->
-  <SearchForm
-    v-show="isShowSearch"
-    :search="_search"
-    :reset="_reset"
-    :columns="searchColumns"
-    :search-param="searchParam"
-    :search-col="searchCol"
-  />
+  <SearchForm v-show="isShowSearch" :search="_search" :reset="_reset" :columns="searchColumns"
+    :search-param="searchParam" :search-col="searchCol" />
 
   <!-- 表格主体 -->
   <div class="card table-main">
     <!-- 表格头部 操作按钮 -->
     <div class="table-header">
       <div class="header-button-lf">
-        <slot name="tableHeader" :selected-list="selectedList" :selected-list-ids="selectedListIds" :is-selected="isSelected" />
+        <slot name="tableHeader" :selected-list="selectedList" :selected-list-ids="selectedListIds"
+          :is-selected="isSelected" />
       </div>
       <div v-if="toolButton" class="header-button-ri">
         <slot name="toolButton">
           <el-button v-if="showToolButton('refresh')" :icon="Refresh" circle @click="getTableList" />
-          <el-button v-if="showToolButton('setting') && columns.length" :icon="Operation" circle @click="openColSetting" />
-          <el-button
-            v-if="showToolButton('search') && searchColumns?.length"
-            :icon="Search"
-            circle
-            @click="isShowSearch = !isShowSearch"
-          />
+          <el-button v-if="showToolButton('setting') && columns.length" :icon="Operation" circle
+            @click="openColSetting" />
+          <el-button v-if="showToolButton('search') && searchColumns?.length" :icon="Search" circle
+            @click="isShowSearch = !isShowSearch" />
         </slot>
       </div>
     </div>
     <!-- 表格主体 -->
-    <el-table
-      v-bind="$attrs"
-      :id="uuid"
-      ref="tableRef"
-      :data="processTableData"
-      :border="border"
-      :row-key="rowKey"
-      @selection-change="selectionChange"
-    >
+    <el-table v-bind="$attrs" :id="uuid" ref="tableRef" :data="processTableData" :border="border" :row-key="rowKey"
+      @selection-change="selectionChange">
       <!-- 默认插槽 -->
       <slot />
       <template v-for="item in tableColumns" :key="item">
         <!-- selection || radio || index || expand || sort -->
-        <el-table-column
-          v-if="item.type && columnTypes.includes(item.type)"
-          v-bind="item"
-          :align="item.align ?? 'center'"
-          :reserve-selection="item.type === 'selection'"
-        >
+        <el-table-column v-if="item.type && columnTypes.includes(item.type)" v-bind="item"
+          :align="item.align ?? 'center'" :reserve-selection="item.type === 'selection'">
           <template #default="scope">
             <!-- expand -->
             <template v-if="item.type === 'expand'">
@@ -289,7 +270,9 @@ defineExpose({
             </el-radio>
             <!-- sort -->
             <el-tag v-if="item.type === 'sort'" class="move">
-              <el-icon> <DCaret /></el-icon>
+              <el-icon>
+                <DCaret />
+              </el-icon>
             </el-tag>
           </template>
         </el-table-column>
@@ -316,13 +299,8 @@ defineExpose({
     </el-table>
     <!-- 分页组件 -->
     <slot name="pagination">
-      <Pagination
-        v-if="pagination"
-        :pageable="pageable"
-        :handle-size-change="handleSizeChange"
-        :handle-current-change="handleCurrentChange"
-        v-bind="paginationOptions"
-      />
+      <Pagination v-if="pagination" :pageable="pageable" :handle-size-change="handleSizeChange"
+        :handle-current-change="handleCurrentChange" v-bind="paginationOptions" />
     </slot>
   </div>
   <!-- 列设置 -->
