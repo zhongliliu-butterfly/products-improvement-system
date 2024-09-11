@@ -73,7 +73,7 @@ const handle_tab_evaluatePieBarChart_select = async (val: any) => {
 }
 provide("handle_tab_evaluatePieBarChart_select", handle_tab_evaluatePieBarChart_select);
 
-onBeforeMount(async () => {
+const get_industry_analysis_select_infoasync = async () => {
   const industry_analysis_select_infoasync = await http.get(`/system/industry_analysis_select_info`);
   const {
     cate_name = [],
@@ -85,6 +85,10 @@ onBeforeMount(async () => {
   cardList.value[0].options = cate_name;
   cardList.value[1].options = brand_name;
   cardList.value[2].options = shop_name;
+};
+
+onBeforeMount(async () => {
+  get_industry_analysis_select_infoasync()
   get_industry_analysis_ring_ratio(cardList.value, [])
   evaluatePieBarChart_data.value = await get_industry_feedback_analysis(cardList.value, [])
 });
