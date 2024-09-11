@@ -3,7 +3,7 @@ import type { ECOption } from '@/components/ECharts/config'
 import echarts from '@/components/ECharts/config'
 import { watch } from 'vue'
 
-const props = defineProps<{ xAxis: [], data1: [], data2: [] }>();
+const props = defineProps<{ xAxis: [], data1: [], data2: [], postotal: 0, negtotal: 0 }>();
 const visible = defineModel<boolean>({ required: true })
 const tendencyRef = ref<HTMLDivElement | null>(null)
 onClickOutside(tendencyRef, () => visible.value = false)
@@ -34,10 +34,10 @@ const tendencyOptions = ref<ECOption>({
     textStyle: { fontSize: 14, color: '#CCCCCC' },
     formatter: (name) => {
       if (name === '正向') {
-        return '正向 :999'
+        return `正向 :${props.postotal}`
       }
       else {
-        return '负向: 333'
+        return `负向 :${props.negtotal}`
       }
     },
   },
@@ -155,10 +155,10 @@ function drawChart() {
       textStyle: { fontSize: 14, color: '#CCCCCC' },
       formatter: (name) => {
         if (name === '正向') {
-          return '正向 :999'
+          return `正向 :${props.postotal}`
         }
         else {
-          return '负向: 333'
+          return `负向 :${props.negtotal}`
         }
       },
     },

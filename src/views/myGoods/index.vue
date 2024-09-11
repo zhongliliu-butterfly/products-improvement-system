@@ -178,6 +178,8 @@ const tendencyVisible = ref(false);
 const tendency_xAxis = ref(Array<any>());
 const tendency_data1 = ref(Array<any>());
 const tendency_data2 = ref(Array<any>());
+const postotal = ref(0);
+const negtotal = ref(0);
 
 const opentendencyVisible = async (parent_asin: string) => {
   const review_trend_res = await http.get(
@@ -190,14 +192,16 @@ const opentendencyVisible = async (parent_asin: string) => {
   const x: any[] = [],
     d1: any[] = [],
     d2: any[] = [];
-  for (var i in review_trend_res.data) {
+  for (var i in review_trend_res.data.review_trend) {
     x.push(i);
-    d1.push(review_trend_res.data[i].pos);
-    d2.push(review_trend_res.data[i].neg);
-    tendency_xAxis.value = x;
-    tendency_data1.value = d1;
-    tendency_data2.value = d2;
+    d1.push(review_trend_res.data.review_trend[i].pos);
+    d2.push(review_trend_res.data.review_trend[i].neg);
   }
+  tendency_xAxis.value = x;
+  tendency_data1.value = d1;
+  tendency_data2.value = d2;
+  postotal.value = review_trend_res.data.total.pos
+  negtotal.value = review_trend_res.data.total.neg
   tendencyVisible.value = true;
 };
 
@@ -367,8 +371,8 @@ const handle = async (v, a) => {
         </template>
       </ProTable>
       <!-- 评论趋势 -->
-      <CommentTendency v-model="tendencyVisible" :xAxis="tendency_xAxis" :data1="tendency_data1"
-        :data2="tendency_data2" />
+      <CommentTendency v-model="tendencyVisible" :xAxis="tendency_xAxis" :data1="tendency_data1" :data2="tendency_data2"
+        :postotal="postotal" :negtotal="negtotal" />
     </div>
   </div>
 </template>

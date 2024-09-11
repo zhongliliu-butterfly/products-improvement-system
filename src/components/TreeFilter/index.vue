@@ -22,6 +22,7 @@ const props = withDefaults(defineProps<TreeFilterProps>(), {
   showButton: false
 });
 const opposition_label_options = ref<any>([]);
+const current_tree_data = ref<any>({});
 
 // emit
 const emit = defineEmits<{
@@ -74,8 +75,7 @@ const submitlabel = async () => {
     "opposition_label_name": "粗糙"
   }
   const { data } = await http.get(
-    `/system/add_custom_label`,
-    level2_params ? 1 : 2,
+    `/system/add_custom_label`, {},
     { loading: false }
   );
   dialogFormVisible.value = false;
@@ -83,6 +83,7 @@ const submitlabel = async () => {
 
 const add_label = async (v) => {
   if (v.level == 2) await get_opposition_label(v);
+  current_tree_data.value = v;
   dialogFormVisible_title.value = `新增${v.label}下的标签`;
   dialogFormVisible.value = true;
 };
