@@ -29,11 +29,11 @@ const tabs = ["重点问题跟进", "客户反馈分析", "对比分析"];
 const question_card_change_value1 = ref("color");
 const question_card_change_value2 = ref("color");
 const question_card_change_value3 = ref("color");
-const active_color = ref([]);
+const active_color = ref<any>();
 const active_color_change = (val) => {
   active_color.value = val;
 };
-const active_size = ref([]);
+const active_size = ref<any>();
 const active_size_change = (val) => {
   active_size.value = val;
 };
@@ -117,6 +117,7 @@ const get_detail_select_info = async () => {
     `/system/detail_select_info`,
     {
       user_id: "1555073968740999936",
+      parent_asin: parent_asin,
     },
     { loading: true }
   );
@@ -365,14 +366,9 @@ const handle_tab = async (index: number) => {
           <span class="font-600">{{ goodInfo.title }}</span>
           <span text="little">{{ goodInfo.review_channel }}</span>
           <div class="rate fc gap20">
-            <el-rate
-              :model-value="goodInfo.review_score"
-              disabled
-              show-score
-              score-template="{value}.0"
-            />
-            <i text="secondary">{{ goodInfo.evaluate_num }}条评价</i>
-            <i text="secondary">{{ goodInfo.review_count }}条退货评价</i>
+            <el-rate :model-value="goodInfo.review_score" disabled show-score score-template="{value}.0" />
+            <i text="secondary">{{ goodInfo.review_count }}条评价</i>
+            <i text="secondary">{{ goodInfo.return_num }}条退货评价</i>
           </div>
         </div>
       </div>
@@ -387,13 +383,8 @@ const handle_tab = async (index: number) => {
     <div class="analysis flex-(col 1) gap16">
       <div class="tabs_wrap">
         <div class="tabs">
-          <span
-            v-for="(tab, index) in tabs"
-            :key="index"
-            :class="{ active: activeOperation === index }"
-            @click="handle_tab(index)"
-            >{{ tab }}</span
-          >
+          <span v-for="(tab, index) in tabs" :key="index" :class="{ active: activeOperation === index }"
+            @click="handle_tab(index)">{{ tab }}</span>
         </div>
         <div class="right fc gap12">
           <el-radio-group v-model="dateValue">
@@ -403,106 +394,58 @@ const handle_tab = async (index: number) => {
             <el-radio-button label="近一年" value="3" />
             <el-radio-button label="上架至今" value="4" />
           </el-radio-group>
-          <el-date-picker
-            v-model="timeValue"
-            type="daterange"
-            range-separator="-"
-            start-placeholder="Start date"
-            end-placeholder="End date"
-            format="YYYY-MM-DD"
-            value-format="YYYY-MM-DD"
-          />
+          <el-date-picker v-model="timeValue" type="daterange" range-separator="-" start-placeholder="Start date"
+            end-placeholder="End date" format="YYYY-MM-DD" value-format="YYYY-MM-DD" />
         </div>
       </div>
       <div class="content flex flex-(1) gap16">
         <template v-if="activeOperation === 0">
-          <question-card
-            @question_card_change="question_card_change1"
-            :title="questioncard_data.title[0]"
-            :number="
-              question_card_change_value1 === 'color'
-                ? questioncard_data.color_num[0]
-                : questioncard_data.size_num[0]
-            "
-            :rate="
-              question_card_change_value1 === 'color'
-                ? questioncard_data.color_rate[0]
-                : questioncard_data.size_rate[0]
-            "
-            :xAxis="
-              question_card_change_value1 === 'color'
+          <question-card @question_card_change="question_card_change1" :title="questioncard_data.title[0]" :number="question_card_change_value1 === 'color'
+            ? questioncard_data.color_num[0]
+            : questioncard_data.size_num[0]
+            " :rate="question_card_change_value1 === 'color'
+              ? questioncard_data.color_rate[0]
+              : questioncard_data.size_rate[0]
+              " :xAxis="question_card_change_value1 === 'color'
                 ? questioncard_data.color_xAxis[0]
                 : questioncard_data.size_xAxis[0]
-            "
-            :yAxis="
-              question_card_change_value1 === 'color'
-                ? questioncard_data.color_yAxis[0]
-                : questioncard_data.size_yAxis[0]
-            "
-          />
-          <question-card
-            @question_card_change="question_card_change2"
-            :title="questioncard_data.title[1]"
-            :number="
-              question_card_change_value2 === 'color'
-                ? questioncard_data.color_num[1]
-                : questioncard_data.size_num[1]
-            "
-            :rate="
-              question_card_change_value2 === 'color'
-                ? questioncard_data.color_rate[1]
-                : questioncard_data.size_rate[1]
-            "
-            :xAxis="
-              question_card_change_value2 === 'color'
+                " :yAxis="question_card_change_value1 === 'color'
+                  ? questioncard_data.color_yAxis[0]
+                  : questioncard_data.size_yAxis[0]
+                  " />
+          <question-card @question_card_change="question_card_change2" :title="questioncard_data.title[1]" :number="question_card_change_value2 === 'color'
+            ? questioncard_data.color_num[1]
+            : questioncard_data.size_num[1]
+            " :rate="question_card_change_value2 === 'color'
+              ? questioncard_data.color_rate[1]
+              : questioncard_data.size_rate[1]
+              " :xAxis="question_card_change_value2 === 'color'
                 ? questioncard_data.color_xAxis[1]
                 : questioncard_data.size_xAxis[1]
-            "
-            :yAxis="
-              question_card_change_value2 === 'color'
-                ? questioncard_data.color_yAxis[1]
-                : questioncard_data.size_yAxis[1]
-            "
-          />
-          <question-card
-            @question_card_change="question_card_change3"
-            :title="questioncard_data.title[2]"
-            :number="
-              question_card_change_value3 === 'color'
-                ? questioncard_data.color_num[2]
-                : questioncard_data.size_num[2]
-            "
-            :rate="
-              question_card_change_value3 === 'color'
-                ? questioncard_data.color_rate[2]
-                : questioncard_data.size_rate[2]
-            "
-            :xAxis="
-              question_card_change_value3 === 'color'
+                " :yAxis="question_card_change_value2 === 'color'
+                  ? questioncard_data.color_yAxis[1]
+                  : questioncard_data.size_yAxis[1]
+                  " />
+          <question-card @question_card_change="question_card_change3" :title="questioncard_data.title[2]" :number="question_card_change_value3 === 'color'
+            ? questioncard_data.color_num[2]
+            : questioncard_data.size_num[2]
+            " :rate="question_card_change_value3 === 'color'
+              ? questioncard_data.color_rate[2]
+              : questioncard_data.size_rate[2]
+              " :xAxis="question_card_change_value3 === 'color'
                 ? questioncard_data.color_xAxis[2]
                 : questioncard_data.size_xAxis[2]
-            "
-            :yAxis="
-              question_card_change_value3 === 'color'
-                ? questioncard_data.color_yAxis[2]
-                : questioncard_data.size_yAxis[2]
-            "
-          />
+                " :yAxis="question_card_change_value3 === 'color'
+                  ? questioncard_data.color_yAxis[2]
+                  : questioncard_data.size_yAxis[2]
+                  " />
         </template>
         <template v-if="activeOperation === 1">
-          <FeedBack
-            :color="feedback_color"
-            :size="feedback_size"
-            :evaluatePieBarChart_data="evaluatePieBarChart_data"
-            @active_color_change="active_color_change"
-            @active_size_change="active_size_change"
-          />
+          <FeedBack :color="feedback_color" :size="feedback_size" :evaluatePieBarChart_data="evaluatePieBarChart_data"
+            @active_color_change="active_color_change" @active_size_change="active_size_change" />
         </template>
         <template v-if="activeOperation === 2">
-          <Comparison
-            :options1="comparison_options1"
-            :options2="comparison_options2"
-          />
+          <Comparison :options1="comparison_options1" :options2="comparison_options2" />
         </template>
       </div>
     </div>

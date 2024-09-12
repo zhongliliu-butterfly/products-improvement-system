@@ -52,27 +52,20 @@ const form = reactive({
 
 const submitlabel = async () => {
   const level2_params = {
-    "current_level": "2",
-    "label_name": "柔顺",
-    "user_id": "1555073968740999936",
-    "level2_industry_name": "服饰",
-    "level2_industry_code": "20001",
-    "level1_label_show_name": "面料",
-    "level1_label_id": "10001"
+    current_level: "2",
+    label_name: "柔顺",
+    user_id: "1555073968740999936",
+    level_id: "10001"
   }
   const level3_params = {
-    "current_level": "3",
-    "label_name": "轻柔",
-    "user_id": "1555073968740999936",
-    "level2_industry_name": "服饰",
-    "level2_industry_code": "20001",
-    "level1_label_show_name": "面料",
-    "level1_label_id": "10001",
-    "level2_label_show_name": "柔顺",
-    "level2_label_id": "1724989010",
-    "label_emotion_type": "pos",
-    "opposition_label_id": "1724996187",
-    "opposition_label_name": "粗糙"
+    current_level: "3",
+    label_name: "轻柔2",
+    user_id: "1555073968740999936",
+    level_id: "1724989010",
+    label_emotion_type: "pos",
+    opposition_label_id: "1724996187",
+    opposition_label_name: "粗糙3",
+    key_words: "xxxxx"
   }
   const { data } = await http.get(
     `/system/add_custom_label`, {},
@@ -82,6 +75,7 @@ const submitlabel = async () => {
 };
 
 const add_label = async (v) => {
+  opposition_label_options.value = []
   if (v.level == 2) await get_opposition_label(v);
   current_tree_data.value = v;
   dialogFormVisible_title.value = `新增${v.label}下的标签`;
@@ -132,7 +126,7 @@ const get_opposition_label = async (v) => {
     `/system/opposition_label`,
     {
       user_id: "1555073968740999936",
-      level2_industry_code: v.value,
+      parent_id: v.value,
     },
     { loading: false }
   );
@@ -227,19 +221,19 @@ defineExpose({ treeData, treeAllData, treeRef });
     </el-scrollbar>
     <el-dialog :title="dialogFormVisible_title" v-model="dialogFormVisible" style="max-width: 600px">
       <el-form :model="form" label-position="right" label-width="auto">
-        <el-form-item label="标签名称" :label-width="formLabelWidth" label-position="right" prop="age">
+        <el-form-item label="标签名称" label-position="right" prop="age">
           <el-input v-model="form.name" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="标签情感" :label-width="formLabelWidth" label-position="right">
+        <el-form-item label="标签情感" label-position="right" v-if="current_tree_data.level == 2">
           <el-select v-model="form.region" placeholder="请选择">
             <el-option label="正向" value="pos"></el-option>
             <el-option label="负向" value="neg"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="关键词" :label-width="formLabelWidth" label-position="right">
+        <el-form-item label="关键词" label-position="right" v-if="current_tree_data.level == 2">
           <el-input v-model="form.name" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="对立标签" :label-width="formLabelWidth" label-position="right">
+        <el-form-item label="对立标签" label-position="right" v-if="current_tree_data.level == 2">
           <el-select v-model="form.region" placeholder="请选择">
             <el-option v-for="(option, idx) in opposition_label_options" :key="idx" :label="option.label"
               :value="option.value" />

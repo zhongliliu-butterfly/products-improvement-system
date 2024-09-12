@@ -5,8 +5,8 @@ const props = defineProps<{
   color: [];
   evaluatePieBarChart_data: [];
 }>();
-const active_size = ref([]);
-const active_color = ref([]);
+const active_size = ref<any>();
+const active_color = ref<any>();
 const emits = defineEmits(["active_size_change", "active_color_change"]);
 const active_size_change = (val) => {
   emits("active_size_change", val);

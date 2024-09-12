@@ -12,7 +12,7 @@ const goodsInfo = ref({
   title: "",
   review_channel: "",
   review_score: 0,
-  evaluate_num: "",
+  return_num: "",
   review_count: "",
 });
 const props = defineProps<ComparisonTabsType>();
@@ -76,8 +76,8 @@ const activeName = ref(0);
               <div class="rate fc gap20">
                 <i class="text-little">{{ goodsInfo.review_channel }}</i>
                 <el-rate :model-value="goodsInfo.review_score" disabled show-score score-template="{value}.0" />
-                <i text="#666">{{ goodsInfo.evaluate_num }}条评价</i>
-                <i text="#666">{{ goodsInfo.review_count }}条退货评价</i>
+                <i text="#666">{{ goodsInfo.review_count }}条评价</i>
+                <i text="#666">{{ goodsInfo.return_num }}条退货评价</i>
               </div>
             </div>
           </div>
