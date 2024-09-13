@@ -19,7 +19,7 @@ const props = withDefaults(defineProps<TreeFilterProps>(), {
   id: "id",
   label: "label",
   multiple: false,
-  showButton: false
+  showButton: false,
 });
 const opposition_label_options = ref<any>([]);
 const current_tree_data = ref<any>({});
@@ -53,29 +53,30 @@ const form = reactive({
 const submitlabel = async () => {
   const level2_params = {
     current_level: "2",
-    label_name: "不柔顺",
+    label_name: form.name,
     user_id: "1555073968740999936",
-    level_id: current_tree_data.value.value
-  }
+    level_id: current_tree_data.value.value,
+  };
   const level3_params = {
     current_level: "3",
-    label_name: "轻柔2",
+    label_name: form.name,
     user_id: "1555073968740999936",
-    level_id: "1724989010",
+    level_id: current_tree_data.value.value,
     label_emotion_type: "pos",
     opposition_label_id: "1724996187",
     opposition_label_name: "粗糙3",
-    key_words: "xxxxx"
-  }
+    key_words: "xxxxx",
+  };
   const { data } = await http.post(
-    `/system/add_custom_label`, current_tree_data.value.level == 1 ? level2_params : level3_params,
+    `/system/add_custom_label`,
+    current_tree_data.value.level == 1 ? level2_params : level3_params,
     { loading: false }
   );
   dialogFormVisible.value = false;
 };
 
 const add_label = async (v) => {
-  opposition_label_options.value = []
+  opposition_label_options.value = [];
   if (v.level == 2) await get_opposition_label(v);
   current_tree_data.value = v;
   dialogFormVisible_title.value = `新增${v.label}下的标签`;
@@ -184,7 +185,12 @@ defineExpose({ treeData, treeAllData, treeRef });
       {{ title }}
     </h4>
     <div class="search">
-      <el-input v-model="filterText" placeholder="请输入标签名称" clearable :suffix-icon="Search" />
+      <el-input
+        v-model="filterText"
+        placeholder="请输入标签名称"
+        clearable
+        :suffix-icon="Search"
+      />
       <!-- <el-dropdown trigger="click">
         <el-icon size="20">
           <More />
@@ -201,42 +207,83 @@ defineExpose({ treeData, treeAllData, treeRef });
         </template>
 </el-dropdown> -->
     </div>
-    <el-scrollbar :style="{ height: title ? `calc(100% - 95px)` : `calc(100% - 56px)` }">
-      <el-tree ref="treeRef" :node-key="id" :data="multiple ? treeData : treeAllData" :show-checkbox="multiple"
-        :check-strictly="false" :current-node-key="!multiple ? selected : ''" :highlight-current="!multiple"
-        :expand-on-click-node="false" :check-on-click-node="multiple" :props="defaultProps"
-        :filter-node-method="filterNode" :default-checked-keys="multiple ? selected : []" @node-click="handleNodeClick"
-        @check="handleCheckChange">
+    <el-scrollbar
+      :style="{ height: title ? `calc(100% - 95px)` : `calc(100% - 56px)` }"
+    >
+      <el-tree
+        ref="treeRef"
+        :node-key="id"
+        :data="multiple ? treeData : treeAllData"
+        :show-checkbox="multiple"
+        :check-strictly="false"
+        :current-node-key="!multiple ? selected : ''"
+        :highlight-current="!multiple"
+        :expand-on-click-node="false"
+        :check-on-click-node="multiple"
+        :props="defaultProps"
+        :filter-node-method="filterNode"
+        :default-checked-keys="multiple ? selected : []"
+        @node-click="handleNodeClick"
+        @check="handleCheckChange"
+      >
         <template #default="scope">
           <span class="el-tree-node__label custom-tree-node">
             <slot :row="scope">
               <span>{{ scope.node.label }}</span>
-              <span v-if="showButton"><a @click="add_label(scope.data)"
-                  v-if="Number(scope.data.level) == 1 || Number(scope.data.level) == 2"> +
-                </a></span>
+              <span v-if="showButton"
+                ><a
+                  @click="add_label(scope.data)"
+                  v-if="
+                    Number(scope.data.level) == 1 ||
+                    Number(scope.data.level) == 2
+                  "
+                >
+                  +
+                </a></span
+              >
             </slot>
           </span>
         </template>
       </el-tree>
     </el-scrollbar>
-    <el-dialog :title="dialogFormVisible_title" v-model="dialogFormVisible" style="max-width: 600px">
+    <el-dialog
+      :title="dialogFormVisible_title"
+      v-model="dialogFormVisible"
+      style="max-width: 600px"
+    >
       <el-form :model="form" label-position="right" label-width="auto">
         <el-form-item label="标签名称" label-position="right" prop="age">
           <el-input v-model="form.name" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="标签情感" label-position="right" v-if="current_tree_data.level == 2">
+        <el-form-item
+          label="标签情感"
+          label-position="right"
+          v-if="current_tree_data.level == 2"
+        >
           <el-select v-model="form.region" placeholder="请选择">
             <el-option label="正向" value="pos"></el-option>
             <el-option label="负向" value="neg"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="关键词" label-position="right" v-if="current_tree_data.level == 2">
+        <el-form-item
+          label="关键词"
+          label-position="right"
+          v-if="current_tree_data.level == 2"
+        >
           <el-input v-model="form.name" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="对立标签" label-position="right" v-if="current_tree_data.level == 2">
+        <el-form-item
+          label="对立标签"
+          label-position="right"
+          v-if="current_tree_data.level == 2"
+        >
           <el-select v-model="form.region" placeholder="请选择">
-            <el-option v-for="(option, idx) in opposition_label_options" :key="idx" :label="option.label"
-              :value="option.value" />
+            <el-option
+              v-for="(option, idx) in opposition_label_options"
+              :key="idx"
+              :label="option.label"
+              :value="option.value"
+            />
           </el-select>
         </el-form-item>
         <el-form-item>

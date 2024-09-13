@@ -9,6 +9,7 @@ import { ElMessage } from "element-plus";
 
 const myref = ref();
 const router = useRouter();
+const cate_hierarchy_data = ref([]);
 
 const remoteMethod = async (query: string) => {
   if (query) {
@@ -131,6 +132,23 @@ const columns = reactive<ColumnProps<any>[]>([
 ]);
 
 const tabledatas = reactive({ data: [] });
+const handleSizeChange = (v) => {
+  pageable.currentPage = 1;
+  pageable.pageSize = v;
+  get_product_table(cardList.value, []);
+};
+
+const handleCurrentChange = (v) => {
+  pageable.currentPage = v;
+  get_product_table(cardList.value, []);
+};
+const pageable = reactive({
+  currentPage: 1,
+  pageSize: 10,
+  total: 100,
+  handleSizeChange: handleSizeChange,
+  handleCurrentChange: handleCurrentChange,
+});
 
 const handleRowClick = async (row: any, col: any) => {
   console.log("col", col);
@@ -200,8 +218,8 @@ const opentendencyVisible = async (parent_asin: string) => {
   tendency_xAxis.value = x;
   tendency_data1.value = d1;
   tendency_data2.value = d2;
-  postotal.value = review_trend_res.data.total.pos
-  negtotal.value = review_trend_res.data.total.neg
+  postotal.value = review_trend_res.data.total.pos;
+  negtotal.value = review_trend_res.data.total.neg;
   tendencyVisible.value = true;
 };
 
@@ -220,10 +238,13 @@ const get_product_table = async (v, a, flag = 1) => {
       max_data: "",
       flag: flag,
       user_id: "1555073968740999936",
+      pageSize: pageable.pageSize,
+      pageNumber: pageable.currentPage,
     },
     { loading: true }
   );
-  tabledatas.data = res.data;
+  tabledatas.data = res.data.data;
+  pageable.total = res.data.total;
 };
 
 const handleactiveName = async (index: number) => {
@@ -252,15 +273,16 @@ const get_product_select_info = async () => {
   cardList.value[1].options = cate_name;
   cardList.value[2].options = parent_asin;
   cardList.value[4].options = review_channel;
-}
+};
 
 onBeforeMount(async () => {
   console.log("init query");
-  get_product_select_info()
+  get_product_select_info();
   get_product_table(cardList.value, [], activeTab.value + 1);
 });
 
 const handle = async (v, a) => {
+  cate_hierarchy_data.value = a;
   console.log(`国家/地区：${JSON.stringify(v[0].value)}`);
   console.log(`类目：${JSON.stringify(a)}`);
   console.log(`父Asin：${JSON.stringify(v[2].value)}`);
@@ -277,13 +299,27 @@ const handle = async (v, a) => {
       <QueryCard :card-list="cardList" ref="myref" @handle="handle" />
     </div>
     <div class="my_goods_list relative">
-      <ProTable class="proTable" :columns="columns" :tool-button="false" :data="tabledatas.data" :border="false"
-        row-key="id" height="calc(100vh - 390px)" @row-click="handleRowClick">
+      <ProTable
+        class="proTable"
+        :columns="columns"
+        :tool-button="false"
+        :data="tabledatas.data"
+        :border="false"
+        row-key="id"
+        height="calc(100vh - 390px)"
+        @row-click="handleRowClick"
+        :paginationOptions="pageable"
+      >
         <template #tableHeader>
           <div class="tabs_wrap">
             <div class="tabs">
-              <span v-for="(item, index) in tabs" :key="index" class="fc gap5"
-                :class="[index === activeTab ? 'active' : '']" @click="handleactiveName(index)">
+              <span
+                v-for="(item, index) in tabs"
+                :key="index"
+                class="fc gap5"
+                :class="[index === activeTab ? 'active' : '']"
+                @click="handleactiveName(index)"
+              >
                 {{ item }}
                 <svg-icon v-show="index === 2" icon="warning" color="#D40000" />
               </span>
@@ -336,7 +372,11 @@ const handle = async (v, a) => {
         </template>
         <template #forward_3_label="{ row }">
           <div class="forward">
-            <div v-for="item in row.negative_3_labels" :key="item" class="item fc gap5">
+            <div
+              v-for="item in row.forward_3_label"
+              :key="item"
+              class="item fc gap5"
+            >
               <div class="proportion">
                 {{ item.count }} / {{ item.proportion }}
               </div>
@@ -346,7 +386,11 @@ const handle = async (v, a) => {
         </template>
         <template #negative_3_labels="{ row }">
           <div class="negative">
-            <div v-for="item in row.negative_3_labels" :key="item" class="item fc gap5">
+            <div
+              v-for="item in row.negative_3_labels"
+              :key="item"
+              class="item fc gap5"
+            >
               <div class="proportion">
                 {{ item.count }} / {{ item.proportion }}
               </div>
@@ -360,7 +404,9 @@ const handle = async (v, a) => {
             <a type="primary" @click="opentendencyVisible(row.parent_asin)">
               <svg-icon icon="tendency" size="18px" />查看趋势
             </a>
-            <a @click="toUrl(row.item_link)"><svg-icon icon="link" size="18px" />链接直达</a>
+            <a @click="toUrl(row.item_link)"
+              ><svg-icon icon="link" size="18px" />链接直达</a
+            >
             <a @click="follow(row)">
               <svg-icon icon="heart" size="18px" />关注商品
             </a>
@@ -371,15 +417,20 @@ const handle = async (v, a) => {
         </template>
       </ProTable>
       <!-- 评论趋势 -->
-      <CommentTendency v-model="tendencyVisible" :xAxis="tendency_xAxis" :data1="tendency_data1" :data2="tendency_data2"
-        :postotal="postotal" :negtotal="negtotal" />
+      <CommentTendency
+        v-model="tendencyVisible"
+        :xAxis="tendency_xAxis"
+        :data1="tendency_data1"
+        :data2="tendency_data2"
+        :postotal="postotal"
+        :negtotal="negtotal"
+      />
     </div>
   </div>
 </template>
 
 <style scoped lang='scss'>
 @import "./style";
-
 .el-dialog .el-dialog__header {
   border-bottom: none;
 }
