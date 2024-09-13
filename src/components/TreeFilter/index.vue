@@ -53,9 +53,9 @@ const form = reactive({
 const submitlabel = async () => {
   const level2_params = {
     current_level: "2",
-    label_name: "柔顺",
+    label_name: "不柔顺",
     user_id: "1555073968740999936",
-    level_id: "10001"
+    level_id: current_tree_data.value.value
   }
   const level3_params = {
     current_level: "3",
@@ -67,8 +67,8 @@ const submitlabel = async () => {
     opposition_label_name: "粗糙3",
     key_words: "xxxxx"
   }
-  const { data } = await http.get(
-    `/system/add_custom_label`, {},
+  const { data } = await http.post(
+    `/system/add_custom_label`, current_tree_data.value.level == 1 ? level2_params : level3_params,
     { loading: false }
   );
   dialogFormVisible.value = false;

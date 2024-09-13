@@ -183,11 +183,11 @@ const render_commentLabel = async (v, a) => {
   };
 };
 const render_commentData = async (v, a) => {
-  const commentData = await get_all_first_label(v, a, 2);
+  const commentData = await get_all_first_label(v, a, 3);
   comment_data.value = commentData.data;
 };
 const render_commentList = async (v, a) => {
-  const commentList = await get_all_first_label(v, a, 3);
+  const commentList = await get_all_first_label(v, a, 2);
   comment_list.value = commentList.data;
 };
 
@@ -202,38 +202,21 @@ const handle = async (v, a) => {
 <template>
   <div class="page_wrapper">
     <div class="detailBtns">
-      <span
-        v-for="(btn, index) in btns"
-        :key="index"
-        :class="{ active: index === activeBtn }"
-        @click="activeBtn = index"
-        >{{ btn }}</span
-      >
+      <span v-for="(btn, index) in btns" :key="index" :class="{ active: index === activeBtn }"
+        @click="activeBtn = index">{{ btn }}</span>
     </div>
     <div v-show="activeBtn === 0" class="consumerSay flex-(col 1) gap16">
       <query-card :card-list="cardList" @handle="handle" />
       <div class="comment h300 fc gap16">
-        <comment-tag
-          :xAxisdata="comment_label.xAxisdata"
-          :negdata="comment_label.negdata"
-          :posdata="comment_label.posdata"
-        />
+        <comment-tag :xAxisdata="comment_label.xAxisdata" :negdata="comment_label.negdata"
+          :posdata="comment_label.posdata" />
         <div class="commentList h-full flex-1">
-          <comment-list
-            :wordList="comment_list?.word_counts"
-            :translate_wordList="comment_list?.translate_word_counts"
-            :commentList="comment_list?.page_words"
-            :total="comment_list.total"
-            @handleSizeChange="commentListSizeChange"
-            @handleCurrentChange="commentListCurrentChange"
-          />
+          <comment-list :wordList="comment_list?.word_counts" :translate_wordList="comment_list?.translate_word_counts"
+            :commentList="comment_list?.page_words" :total="comment_list.total"
+            @handleSizeChange="commentListSizeChange" @handleCurrentChange="commentListCurrentChange" />
         </div>
       </div>
-      <Comment
-        class="comment-card flex-1"
-        :comment_data="comment_data"
-        @tabClick="comment_tabClick"
-      />
+      <Comment class="comment-card flex-1" :comment_data="comment_data" @tabClick="comment_tabClick" />
     </div>
     <div v-show="activeBtn === 1" class="tagManage flex-(col 1)">
       <p class="mb20 text-little">
