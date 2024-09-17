@@ -111,7 +111,9 @@ const tagVal = ref('0')
 
 <template>
   <div class="tagList flex gap16">
-    <div class="tree-wrapper scroll-none min-w250 flex-col gap20 rounded-10 bg-white px15 py20">
+    <div
+      class="tree-wrapper scroll-none min-w250 flex-col gap20 rounded-10 bg-white px15 py20"
+    >
       <div class="tabs h30 fcc">
         <el-radio-group v-model="tagVal">
           <el-radio-button label="自定义标签" value="0" />
@@ -119,16 +121,41 @@ const tagVal = ref('0')
         </el-radio-group>
       </div>
       <!-- <div class="content flex-1 o-auto"> -->
-      <TreeFilter v-if="tagVal == '0'" label="label" :data="treeFilterData" :default-value="initParam.departmentId"
-        class="tree-card" @change="changeTreeFilter" :showButton=true />
-      <TreeFilter v-else label="label" :data="sysTreeFilterData" :default-value="sysinitParam.departmentId"
-        class="tree-card" @change="changeTreeFilter" />
+      <TreeFilter
+        v-if="tagVal == '0'"
+        label="label"
+        :data="treeFilterData"
+        :default-value="initParam.departmentId"
+        class="tree-card"
+        @change="changeTreeFilter"
+        :showButton="true"
+        :get_lable="getTreeFilter"
+        default-expand-all
+        node-key="value"
+      />
+      <TreeFilter
+        v-else
+        label="label"
+        :data="sysTreeFilterData"
+        :default-value="sysinitParam.departmentId"
+        class="tree-card"
+        @change="changeTreeFilter"
+      />
       <!-- </div> -->
     </div>
 
     <div class="table-box">
-      <ProTable ref="proTable" row-key="id" :indent="20" :columns="columns" :request-auto="false"
-        :init-param="initParam" :tool-button="false" :data="sysCustomLabel" :paginationOptions="pageable">
+      <ProTable
+        ref="proTable"
+        row-key="id"
+        :indent="20"
+        :columns="columns"
+        :request-auto="false"
+        :init-param="initParam"
+        :tool-button="false"
+        :data="sysCustomLabel"
+        :paginationOptions="pageable"
+      >
         <!-- 表格 header 按钮 -->
         <template #tableHeader>
           <div class="header w-full fbc">
@@ -154,26 +181,21 @@ const tagVal = ref('0')
 <style scoped lang="scss">
 .tagList {
   height: calc(100vh - 230px);
-
   :deep(.header-button-lf) {
     float: unset !important;
   }
-
   .tree-wrapper {
     .tabs {
       :deep(.el-radio-button__inner) {
         transition: none;
       }
-
-      >span {
+      > span {
         @apply text-#999 cur-p;
-
         &.active {
           @apply text-primary;
         }
       }
     }
-
     .tree-card {
       @apply flex-1 o-auto m0 ! h-auto ! w-auto ! border-none ! p0 ! shadow-none !;
     }

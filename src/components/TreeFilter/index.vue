@@ -3,6 +3,7 @@ import http from "@/api";
 import { nextTick, onBeforeMount, ref, watch } from "vue";
 import { ElTree } from "element-plus";
 import { Search } from "@element-plus/icons-vue";
+import { ElMessage } from "element-plus";
 
 // 接收父组件参数并设置默认值
 interface TreeFilterProps {
@@ -14,12 +15,14 @@ interface TreeFilterProps {
   multiple?: boolean; // 是否为多选 ==> 非必传，默认为 false
   defaultValue?: any; // 默认选中的值 ==> 非必传
   showButton?: boolean; // 是否显示新增按钮 ==> 非必传，默认为 false
+  get_lable?: Function;
 }
 const props = withDefaults(defineProps<TreeFilterProps>(), {
   id: "id",
   label: "label",
   multiple: false,
   showButton: false,
+  get_lable: () => {},
 });
 const opposition_label_options = ref<any>([]);
 const current_tree_data = ref<any>({});
@@ -42,12 +45,9 @@ const dialogFormVisible_title = ref("");
 const form = reactive({
   name: "",
   region: "",
-  date1: "",
-  date2: "",
-  delivery: false,
-  type: [],
-  resource: "",
-  desc: "",
+  opposition_label_name: "",
+  opposition_label_id: "",
+  keywords: "",
 });
 
 const submitlabel = async () => {
@@ -62,17 +62,28 @@ const submitlabel = async () => {
     label_name: form.name,
     user_id: "1555073968740999936",
     level_id: current_tree_data.value.value,
-    label_emotion_type: "pos",
-    opposition_label_id: "1724996187",
-    opposition_label_name: "粗糙3",
-    key_words: "xxxxx",
+    label_emotion_type: form.region,
+    opposition_label_id: form.opposition_label_id,
+    opposition_label_name: form.opposition_label_name,
+    key_words: form.keywords,
   };
-  const { data } = await http.post(
+  const add_custom_label = await http.post(
     `/system/add_custom_label`,
     current_tree_data.value.level == 1 ? level2_params : level3_params,
     { loading: false }
   );
+  ElMessage({
+    type: "success",
+    message: add_custom_label.msg,
+  });
+  props.get_lable();
   dialogFormVisible.value = false;
+};
+
+const opposition_label_change = (v) => {
+  opposition_label_options.value.forEach((element) => {
+    if (element.value == v) form.opposition_label_name = element.label;
+  });
 };
 
 const add_label = async (v) => {
@@ -270,14 +281,18 @@ defineExpose({ treeData, treeAllData, treeRef });
           label-position="right"
           v-if="current_tree_data.level == 2"
         >
-          <el-input v-model="form.name" autocomplete="off"></el-input>
+          <el-input v-model="form.keywords" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item
           label="对立标签"
           label-position="right"
           v-if="current_tree_data.level == 2"
         >
-          <el-select v-model="form.region" placeholder="请选择">
+          <el-select
+            v-model="form.opposition_label_id"
+            placeholder="请选择"
+            @change="opposition_label_change"
+          >
             <el-option
               v-for="(option, idx) in opposition_label_options"
               :key="idx"
